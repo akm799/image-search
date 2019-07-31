@@ -169,7 +169,9 @@ public class DynamicWindowView extends View {
         if (xMin != NO_VALUE) {
             final float dx = (xMaxNew - xMinNew) - (xMax - xMin);
             final float newWidth = wWidth + dx;
-            if (newWidth > 0 && wLeft + newWidth < getWidth()) {
+            final float newLeft = wLeft - dx/2;
+            if (newWidth > 0 && newLeft > 0 && newLeft + newWidth < getWidth()) {
+                wLeft = newLeft;
                 wWidth = newWidth;
                 invalidate();
             }
@@ -186,7 +188,9 @@ public class DynamicWindowView extends View {
         if (yMin != NO_VALUE) {
             final float dy = (yMaxNew - yMinNew) - (yMax - yMin);
             final float newHeight = wHeight + dy;
-            if (newHeight > 0 && wTop + newHeight < getHeight()) {
+            final float newTop = wTop - dy/2;
+            if (newHeight > 0 && newTop > 0 && newTop + newHeight < getHeight()) {
+                wTop = newTop;
                 wHeight = newHeight;
                 invalidate();
             }
