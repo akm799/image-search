@@ -6,6 +6,7 @@
         <attr name="borderWidth" format="dimension"/>
         <attr name="windowBorderColour" format="color"/>
         <attr name="windowBorderWidth" format="dimension"/>
+        <attr name="windowInitSideFraction" format="fraction"/>
     </declare-styleable>
 
 </resources>

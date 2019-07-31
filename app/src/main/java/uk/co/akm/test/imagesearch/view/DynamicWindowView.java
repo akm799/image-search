@@ -20,10 +20,10 @@ public class DynamicWindowView extends View {
     private static final float DEFAULT_WINDOW_BORDER_WIDTH = 2f;
     private static final int DEFAULT_BORDER_COLOUR = Color.BLACK;
     private static final int DEFAULT_WINDOW_BORDER_COLOUR = Color.RED;
+    private static final float DEFAULT_WINDOW_INITIAL_SIDE_FRACTION = 0.1f;
 
     private static final float NO_VALUE = -1f;
 
-    private final float sizeFraction = 0.1f;
 
     private float wLeft = NO_VALUE;
     private float wTop = NO_VALUE;
@@ -40,6 +40,7 @@ public class DynamicWindowView extends View {
 
     private Paint windowPaint;
     private Paint borderPaint;
+    private float windowInitialSideFraction;
 
     public DynamicWindowView(Context context) {
         super(context);
@@ -71,6 +72,7 @@ public class DynamicWindowView extends View {
     }
 
     private void init(TypedArray attributes) {
+        windowInitialSideFraction = attributes.getFraction(R.styleable.DynamicWindowView_windowInitSideFraction, 1, 1, DEFAULT_WINDOW_INITIAL_SIDE_FRACTION);
         borderPaint = buildStrokePaint(attributes, R.styleable.DynamicWindowView_borderWidth, DEFAULT_BORDER_WIDTH, R.styleable.DynamicWindowView_borderColour, DEFAULT_BORDER_COLOUR);
         windowPaint = buildStrokePaint(attributes, R.styleable.DynamicWindowView_windowBorderWidth, DEFAULT_WINDOW_BORDER_WIDTH, R.styleable.DynamicWindowView_windowBorderColour, DEFAULT_WINDOW_BORDER_COLOUR);
     }
@@ -160,7 +162,7 @@ public class DynamicWindowView extends View {
     }
 
     private void initWindow(float x, float y) {
-        final float side = sizeFraction*Math.min(getWidth(), getHeight());
+        final float side = windowInitialSideFraction*Math.min(getWidth(), getHeight());
         final float halfSide = side/2;
         final float initLeft = x - halfSide;
         final float initTop = y - halfSide;
