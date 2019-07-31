@@ -130,20 +130,25 @@ public class DynamicWindowView extends View {
         final float yPosNew = event.getY();
 
         if (xPos != NO_VALUE) {
-            final float dx = xPosNew - xPos;
-            final float dy = yPosNew - yPos;
-
-            final float newLeft = wLeft + dx;
-            final float newTop = wTop + dy;
-            if (newLeft > 0 && newTop > 0 && newLeft + wWidth < getWidth() && newTop + wHeight < getHeight()) {
-                wLeft = newLeft;
-                wTop = newTop;
-                invalidate();
-            }
+            changePosition(xPosNew, yPosNew);
         }
 
         xPos = xPosNew;
         yPos = yPosNew;
+    }
+
+    private void changePosition(float xPosNew, float yPosNew) {
+        final float dx = xPosNew - xPos;
+        final float dy = yPosNew - yPos;
+
+        final float newLeft = wLeft + dx;
+        final float newTop = wTop + dy;
+
+        if (inRange(newLeft, wWidth, getWidth()) && inRange(newTop, wHeight, getHeight())) {
+            wLeft = newLeft;
+            wTop = newTop;
+            invalidate();
+        }
     }
 
     private void processSizeChangeMove(MotionEvent event) {
@@ -167,18 +172,24 @@ public class DynamicWindowView extends View {
         final float xMaxNew = Math.max(x1, x2);
 
         if (xMin != NO_VALUE) {
-            final float dx = (xMaxNew - xMinNew) - (xMax - xMin);
-            final float newWidth = wWidth + dx;
+            changeWidth(xMinNew, xMaxNew);
+        }
+
+        xMin = xMinNew;
+        xMax = xMaxNew;
+    }
+
+    private void changeWidth(float xMinNew, float xMaxNew) {
+        final float dx = (xMaxNew - xMinNew) - (xMax - xMin);
+        final float newWidth = wWidth + dx;
+        if (newWidth > 0) {
             final float newLeft = wLeft - dx/2;
-            if (newWidth > 0 && newLeft > 0 && newLeft + newWidth < getWidth()) {
+            if (inRange(newLeft, newWidth, getWidth())) {
                 wLeft = newLeft;
                 wWidth = newWidth;
                 invalidate();
             }
         }
-
-        xMin = xMinNew;
-        xMax = xMaxNew;
     }
 
     private void processHeightChangeMove(float y1, float y2) {
@@ -186,17 +197,27 @@ public class DynamicWindowView extends View {
         final float yMaxNew = Math.max(y1, y2);
 
         if (yMin != NO_VALUE) {
-            final float dy = (yMaxNew - yMinNew) - (yMax - yMin);
-            final float newHeight = wHeight + dy;
+            changeHeight(yMinNew, yMaxNew);
+        }
+
+        yMin = yMinNew;
+        yMax = yMaxNew;
+    }
+
+    private void changeHeight(float yMinNew, float yMaxNew) {
+        final float dy = (yMaxNew - yMinNew) - (yMax - yMin);
+        final float newHeight = wHeight + dy;
+        if (newHeight > 0) {
             final float newTop = wTop - dy/2;
-            if (newHeight > 0 && newTop > 0 && newTop + newHeight < getHeight()) {
+            if (inRange(newTop, newHeight, getHeight())) {
                 wTop = newTop;
                 wHeight = newHeight;
                 invalidate();
             }
         }
+    }
 
-        yMin = yMinNew;
-        yMax = yMaxNew;
+    private boolean inRange(float start, float size, int maxSize) {
+        return start > 0 && start + size < maxSize;
     }
 }
