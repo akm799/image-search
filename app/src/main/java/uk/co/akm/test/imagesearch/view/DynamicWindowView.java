@@ -51,6 +51,7 @@ public class DynamicWindowView extends View {
     private void init() {
         paint.setColor(Color.RED);
         paint.setStrokeWidth(2f);
+        paint.setStyle(Paint.Style.STROKE); // So that we can draw empty rectangles.
     }
 
     @Override
@@ -73,10 +74,7 @@ public class DynamicWindowView extends View {
     }
 
     private void drawWindow(Canvas canvas) {
-        canvas.drawLine(wLeft, wTop, wLeft + wWidth, wTop, paint);
-        canvas.drawLine(wLeft + wWidth, wTop, wLeft + wWidth, wTop + wHeight, paint);
-        canvas.drawLine(wLeft + wWidth, wTop + wHeight, wLeft, wTop + wHeight, paint);
-        canvas.drawLine(wLeft, wTop + wHeight, wLeft, wTop, paint);
+        canvas.drawRect(wLeft, wTop, wLeft + wWidth, wTop + wHeight, paint);
     }
 
     @Override
