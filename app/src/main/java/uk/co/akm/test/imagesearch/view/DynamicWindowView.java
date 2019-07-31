@@ -17,9 +17,9 @@ import uk.co.akm.test.imagesearch.R;
  */
 public class DynamicWindowView extends View {
     private static final float DEFAULT_BORDER_WIDTH = 0f;
-    private static final float DEFAULT_WINDOW_WIDTH = 2f;
+    private static final float DEFAULT_WINDOW_BORDER_WIDTH = 2f;
     private static final int DEFAULT_BORDER_COLOUR = Color.BLACK;
-    private static final int DEFAULT_WINDOW_COLOUR = Color.RED;
+    private static final int DEFAULT_WINDOW_BORDER_COLOUR = Color.RED;
 
     private static final float NO_VALUE = -1f;
 
@@ -62,7 +62,7 @@ public class DynamicWindowView extends View {
     }
 
     private void init() {
-        windowPaint = buildStrokePaint(DEFAULT_WINDOW_WIDTH, DEFAULT_WINDOW_COLOUR);
+        windowPaint = buildStrokePaint(DEFAULT_WINDOW_BORDER_WIDTH, DEFAULT_WINDOW_BORDER_COLOUR);
     }
 
     private void init(Context context, AttributeSet attrs) {
@@ -72,7 +72,7 @@ public class DynamicWindowView extends View {
 
     private void init(TypedArray attributes) {
         borderPaint = buildStrokePaint(attributes, R.styleable.DynamicWindowView_borderWidth, DEFAULT_BORDER_WIDTH, R.styleable.DynamicWindowView_borderColour, DEFAULT_BORDER_COLOUR);
-        windowPaint = buildStrokePaint(attributes, R.styleable.DynamicWindowView_windowWidth, DEFAULT_WINDOW_WIDTH, R.styleable.DynamicWindowView_windowColour, DEFAULT_WINDOW_COLOUR);
+        windowPaint = buildStrokePaint(attributes, R.styleable.DynamicWindowView_windowBorderWidth, DEFAULT_WINDOW_BORDER_WIDTH, R.styleable.DynamicWindowView_windowBorderColour, DEFAULT_WINDOW_BORDER_COLOUR);
     }
 
     private Paint buildStrokePaint(TypedArray attributes, int strokeWidthIndex, float stokeWidthDefault, int colourIndex, int colourDefault) {

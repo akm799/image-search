@@ -7,8 +7,8 @@
     tools:context=".MainActivity">
 
     <uk.co.akm.test.imagesearch.view.DynamicWindowView
-        android:layout_width="600dp"
-        android:layout_height="600dp"
+        android:layout_width="312dp"
+        android:layout_height="312dp"
         android:layout_gravity="center"
         app:borderWidth="1dp"/>
 </FrameLayout>

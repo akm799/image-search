@@ -4,8 +4,8 @@
     <declare-styleable name="DynamicWindowView">
         <attr name="borderColour" format="color"/>
         <attr name="borderWidth" format="dimension"/>
-        <attr name="windowColour" format="color"/>
-        <attr name="windowWidth" format="dimension"/>
+        <attr name="windowBorderColour" format="color"/>
+        <attr name="windowBorderWidth" format="dimension"/>
     </declare-styleable>
 
 </resources>
