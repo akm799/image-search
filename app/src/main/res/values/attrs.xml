@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <declare-styleable name="DynamicWindowView">
+        <attr name="borderColour" format="color"/>
+        <attr name="borderWidth" format="dimension"/>
+        <attr name="windowColour" format="color"/>
+        <attr name="windowWidth" format="dimension"/>
+    </declare-styleable>
+
+</resources>

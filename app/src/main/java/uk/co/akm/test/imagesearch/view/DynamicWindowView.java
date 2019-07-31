@@ -1,6 +1,7 @@
 package uk.co.akm.test.imagesearch.view;
 
 import android.content.Context;
+import android.content.res.TypedArray;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -9,11 +10,20 @@ import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
 
+import uk.co.akm.test.imagesearch.R;
+
+/**
+ * This is a utility view that allows the user to define a window inside the view area.
+ */
 public class DynamicWindowView extends View {
+    private static final float DEFAULT_BORDER_WIDTH = 0f;
+    private static final float DEFAULT_WINDOW_WIDTH = 2f;
+    private static final int DEFAULT_BORDER_COLOUR = Color.BLACK;
+    private static final int DEFAULT_WINDOW_COLOUR = Color.RED;
+
     private static final float NO_VALUE = -1f;
 
     private final float sizeFraction = 0.1f;
-    private final Paint paint = new Paint();
 
     private float wLeft = NO_VALUE;
     private float wTop = NO_VALUE;
@@ -28,6 +38,9 @@ public class DynamicWindowView extends View {
     private float yMin = NO_VALUE;
     private float yMax = NO_VALUE;
 
+    private Paint windowPaint;
+    private Paint borderPaint;
+
     public DynamicWindowView(Context context) {
         super(context);
         init();
@@ -35,34 +48,70 @@ public class DynamicWindowView extends View {
 
     public DynamicWindowView(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
-        init();
+        init(context, attrs);
     }
 
     public DynamicWindowView(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
-        init();
+        init(context, attrs);
     }
 
     public DynamicWindowView(Context context, @Nullable AttributeSet attrs, int defStyleAttr, int defStyleRes) {
         super(context, attrs, defStyleAttr, defStyleRes);
-        init();
+        init(context, attrs);
     }
 
     private void init() {
-        paint.setColor(Color.RED);
-        paint.setStrokeWidth(2f);
+        windowPaint = buildStrokePaint(DEFAULT_WINDOW_WIDTH, DEFAULT_WINDOW_COLOUR);
+    }
+
+    private void init(Context context, AttributeSet attrs) {
+        final TypedArray attributes = context.getTheme().obtainStyledAttributes(attrs, R.styleable.DynamicWindowView, 0, 0);
+        init(attributes);
+    }
+
+    private void init(TypedArray attributes) {
+        borderPaint = buildStrokePaint(attributes, R.styleable.DynamicWindowView_borderWidth, DEFAULT_BORDER_WIDTH, R.styleable.DynamicWindowView_borderColour, DEFAULT_BORDER_COLOUR);
+        windowPaint = buildStrokePaint(attributes, R.styleable.DynamicWindowView_windowWidth, DEFAULT_WINDOW_WIDTH, R.styleable.DynamicWindowView_windowColour, DEFAULT_WINDOW_COLOUR);
+    }
+
+    private Paint buildStrokePaint(TypedArray attributes, int strokeWidthIndex, float stokeWidthDefault, int colourIndex, int colourDefault) {
+        final int colour = attributes.getColor(colourIndex, colourDefault);
+        final float strokeWidth = attributes.getDimension(strokeWidthIndex, stokeWidthDefault);
+
+        return buildStrokePaint(strokeWidth, colour);
+    }
+
+    private Paint buildStrokePaint(float strokeWidth, int colour) {
+        if (strokeWidth == 0) {
+            return null;
+        }
+
+        final Paint paint = new Paint();
+        paint.setColor(colour);
+        paint.setStrokeWidth(strokeWidth);
         paint.setStyle(Paint.Style.STROKE); // So that we can draw empty rectangles.
+
+        return paint;
     }
 
     @Override
     public void onDraw(Canvas canvas) {
+        if (borderPaint != null) {
+            drawBorder(canvas);
+        }
+
         if (wLeft != NO_VALUE) {
             drawWindow(canvas);
         }
     }
-    
+
+    private void drawBorder(Canvas canvas) {
+        canvas.drawRect(0, 0, getWidth(), getHeight(), borderPaint);
+    }
+
     private void drawWindow(Canvas canvas) {
-        canvas.drawRect(wLeft, wTop, wLeft + wWidth, wTop + wHeight, paint);
+        canvas.drawRect(wLeft, wTop, wLeft + wWidth, wTop + wHeight, windowPaint);
     }
 
     @Override
