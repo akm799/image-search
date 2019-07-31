@@ -56,23 +56,11 @@ public class DynamicWindowView extends View {
 
     @Override
     public void onDraw(Canvas canvas) {
-        if (wLeft == NO_VALUE) {
-            initWindow();
+        if (wLeft != NO_VALUE) {
+            drawWindow(canvas);
         }
-
-        drawWindow(canvas);
     }
-
-    private void initWindow() {
-        final float f = 1f - sizeFraction;
-        wLeft = f*getWidth()/2;
-        wTop = f*getHeight()/2;
-
-        final float side = sizeFraction*Math.min(getWidth(), getHeight());
-        wWidth = side;
-        wHeight = side;
-    }
-
+    
     private void drawWindow(Canvas canvas) {
         canvas.drawRect(wLeft, wTop, wLeft + wWidth, wTop + wHeight, paint);
     }
@@ -82,8 +70,11 @@ public class DynamicWindowView extends View {
         if (isEnabled()) {
             switch (event.getAction()) {
                 case MotionEvent.ACTION_UP:
-                case MotionEvent.ACTION_DOWN:
                     clearTracker();
+                    break;
+
+                case MotionEvent.ACTION_DOWN:
+                    processTouch(event);
                     break;
 
                 case MotionEvent.ACTION_MOVE:
@@ -111,6 +102,27 @@ public class DynamicWindowView extends View {
         xMax = NO_VALUE;
         yMin = NO_VALUE;
         yMax = NO_VALUE;
+    }
+
+    private void processTouch(MotionEvent event) {
+        if (wLeft == NO_VALUE) {
+            initWindow(event.getX(), event.getY());
+        }
+    }
+
+    private void initWindow(float x, float y) {
+        final float side = sizeFraction*Math.min(getWidth(), getHeight());
+        final float halfSide = side/2;
+        final float initLeft = x - halfSide;
+        final float initTop = y - halfSide;
+
+        if (inRange(initLeft, side, getWidth()) && inRange(initTop, side, getHeight())) {
+            wWidth = side;
+            wHeight = side;
+            wLeft = initLeft;
+            wTop = initTop;
+            invalidate();
+        }
     }
 
     private void processMove(MotionEvent event) {
