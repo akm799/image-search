@@ -42,6 +42,14 @@ final class InternalWindow {
         return (inRange(initLeft, side, parent.getWidth()) && inRange(initTop, side, parent.getHeight()));
     }
 
+    InternalWindow(View parent, float wLeft, float wTop, float wWidth, float wHeight) {
+        this.parent = parent;
+        this.wLeft = wLeft;
+        this.wTop = wTop;
+        this.wWidth = wWidth;
+        this.wHeight = wHeight;
+    }
+
     InternalWindow(View parent, MotionEvent event, float windowInitialSideFraction) {
         this.parent = parent;
         initWindow(event.getX(), event.getY(), windowInitialSideFraction);
