@@ -3,6 +3,7 @@ package uk.co.akm.test.imagesearch.view;
 
 import android.graphics.Canvas;
 import android.graphics.Paint;
+import android.os.Parcelable;
 import android.view.MotionEvent;
 import android.view.View;
 
@@ -66,8 +67,11 @@ final class InternalWindow {
             wHeight = side;
             wLeft = initLeft;
             wTop = initTop;
-            parent.invalidate();
         }
+    }
+
+    InternalWindowState getState(Parcelable superState, View parent) {
+        return new InternalWindowState(superState, parent, wLeft, wTop, wWidth, wHeight);
     }
 
     void draw(Canvas canvas, Paint paint) {
@@ -190,5 +194,10 @@ final class InternalWindow {
 
     private static boolean inRange(float start, float size, int maxSize) {
         return start > 0 && start + size < maxSize;
+    }
+
+    @Override
+    public String toString() {
+        return ("(left, top)=(" + wLeft + ", " + wTop + ") [width, height]=[" + wWidth + ", " + wHeight + "] in ["+ parent.getWidth() + ", " + parent.getHeight() + "].");
     }
 }

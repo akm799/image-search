@@ -5,8 +5,10 @@ import android.content.res.TypedArray;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.os.Parcelable;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 
@@ -14,6 +16,9 @@ import uk.co.akm.test.imagesearch.R;
 
 /**
  * This is a utility view that allows the user to define a window inside the view area.
+ *
+ * WARNING: If this view is used without an ID, then it will not be preserved between activity state
+ * transitions.
  */
 public class DynamicWindowView extends View {
     private static final float DEFAULT_BORDER_WIDTH = 0f;
@@ -50,11 +55,13 @@ public class DynamicWindowView extends View {
 
     private void init() {
         windowPaint = buildStrokePaint(DEFAULT_WINDOW_BORDER_WIDTH, DEFAULT_WINDOW_BORDER_COLOUR);
+        setSaveEnabled(true); // Without this, the view state will not be saved.
     }
 
     private void init(Context context, AttributeSet attrs) {
         final TypedArray attributes = context.getTheme().obtainStyledAttributes(attrs, R.styleable.DynamicWindowView, 0, 0);
         init(attributes);
+        setSaveEnabled(true); // Without this, the view state will not be saved.
     }
 
     private void init(TypedArray attributes) {
@@ -81,6 +88,30 @@ public class DynamicWindowView extends View {
         paint.setStyle(Paint.Style.STROKE); // So that we can draw empty rectangles.
 
         return paint;
+    }
+
+    @Nullable
+    @Override
+    protected Parcelable onSaveInstanceState() {
+        final Parcelable superState = super.onSaveInstanceState();
+
+        if (window == null) {
+            return superState;
+        } else {
+            return window.getState(superState, this);
+        }
+    }
+
+    @Override
+    protected void onRestoreInstanceState(Parcelable state) {
+        if (state instanceof InternalWindowState && window == null) {
+            final InternalWindowState internalWindowState = (InternalWindowState)state;
+            super.onRestoreInstanceState(internalWindowState.getSuperState());
+            window = internalWindowState.toInternalWindow(this);
+            invalidate();
+        } else {
+            super.onRestoreInstanceState(state);
+        }
     }
 
     @Override
@@ -129,6 +160,7 @@ public class DynamicWindowView extends View {
     private void createWindow(MotionEvent event) {
         if (window == null && InternalWindow.canInitializeWindow(this, event, windowInitialSideFraction)) {
             window = new InternalWindow(this, event, windowInitialSideFraction);
+            invalidate();
         }
     }
 

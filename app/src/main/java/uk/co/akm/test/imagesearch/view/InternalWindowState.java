@@ -10,7 +10,7 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 
-final class InternalWindowState extends View.BaseSavedState {
+public class InternalWindowState extends View.BaseSavedState {
     private static final byte WIDTH_BYTE = 0;
     private static final byte HEIGHT_BYTE = 1;
     private static final int STATE_BYTE_ARRAY_LENGTH = 20;
@@ -22,8 +22,8 @@ final class InternalWindowState extends View.BaseSavedState {
         }
 
         @Override
-        public InternalWindowState[] newArray(int i) {
-            return new InternalWindowState[i];
+        public InternalWindowState[] newArray(int size) {
+            return new InternalWindowState[size];
         }
     };
 
@@ -35,8 +35,7 @@ final class InternalWindowState extends View.BaseSavedState {
 
     InternalWindowState(
             Parcelable superState,
-            int viewWidth,
-            int viewHeight,
+            View parent,
             float wLeft,
             float wTop,
             float wWidth,
@@ -44,7 +43,10 @@ final class InternalWindowState extends View.BaseSavedState {
     ) {
         super(superState);
 
-        b = (viewWidth < viewHeight ? WIDTH_BYTE : HEIGHT_BYTE);
+        final int viewWidth = parent.getWidth();
+        final int viewHeight = parent.getHeight();
+
+        b = (viewWidth <= viewHeight ? WIDTH_BYTE : HEIGHT_BYTE);
         ratio = (b == WIDTH_BYTE ? wHeight/wWidth : wWidth/wHeight);
         sizeFraction = (b == WIDTH_BYTE ? wWidth/viewWidth : wHeight/viewHeight);
         xFraction = wLeft/viewWidth;
@@ -54,12 +56,7 @@ final class InternalWindowState extends View.BaseSavedState {
     private InternalWindowState(Parcel source) {
         super(source);
 
-        final byte[] state = new byte[STATE_BYTE_ARRAY_LENGTH];
-        source.readByteArray(state);
-
-        final DataInputStream dis = new DataInputStream(new ByteArrayInputStream(state));
-
-        try {
+        try (DataInputStream dis = getStateDataInputStream(source)) {
             b = dis.readByte();
             ratio = dis.readFloat();
             sizeFraction = dis.readFloat();
@@ -68,6 +65,13 @@ final class InternalWindowState extends View.BaseSavedState {
         } catch (IOException ioe) {
             throw new RuntimeException(ioe); // Should never happen.
         }
+    }
+
+    private DataInputStream getStateDataInputStream(Parcel source) {
+        final byte[] state = new byte[STATE_BYTE_ARRAY_LENGTH];
+        source.readByteArray(state);
+
+        return new DataInputStream(new ByteArrayInputStream(state));
     }
 
     @Override
