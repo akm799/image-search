@@ -8,7 +8,6 @@ import android.graphics.Paint;
 import android.os.Parcelable;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 
@@ -32,6 +31,7 @@ public class DynamicWindowView extends View {
     private float windowInitialSideFraction;
 
     private InternalWindow window;
+    private InternalWindowState savedWindowState;
 
     public DynamicWindowView(Context context) {
         super(context);
@@ -105,10 +105,9 @@ public class DynamicWindowView extends View {
     @Override
     protected void onRestoreInstanceState(Parcelable state) {
         if (state instanceof InternalWindowState && window == null) {
-            final InternalWindowState internalWindowState = (InternalWindowState)state;
-            super.onRestoreInstanceState(internalWindowState.getSuperState());
-            window = internalWindowState.toInternalWindow(this);
-            invalidate();
+            final InternalWindowState savedWindowState = (InternalWindowState)state;
+            super.onRestoreInstanceState(savedWindowState.getSuperState());
+            this.savedWindowState = savedWindowState;
         } else {
             super.onRestoreInstanceState(state);
         }
@@ -118,6 +117,12 @@ public class DynamicWindowView extends View {
     public void onDraw(Canvas canvas) {
         if (borderPaint != null) {
             drawBorder(canvas);
+        }
+
+        // Must restore the window from the saved state (if any) here, where the view has, by now, non-zero dimensions.
+        if (savedWindowState != null) {
+            window = savedWindowState.toInternalWindow(this);
+            savedWindowState = null;
         }
 
         if (window != null) {

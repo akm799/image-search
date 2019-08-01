@@ -10,7 +10,7 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 
-public class InternalWindowState extends View.BaseSavedState {
+final class InternalWindowState extends View.BaseSavedState {
     private static final byte WIDTH_BYTE = 0;
     private static final byte HEIGHT_BYTE = 1;
     private static final int STATE_BYTE_ARRAY_LENGTH = 20;
@@ -42,7 +42,6 @@ public class InternalWindowState extends View.BaseSavedState {
             float wHeight
     ) {
         super(superState);
-
         final int viewWidth = parent.getWidth();
         final int viewHeight = parent.getHeight();
 
@@ -55,7 +54,6 @@ public class InternalWindowState extends View.BaseSavedState {
 
     private InternalWindowState(Parcel source) {
         super(source);
-
         try (DataInputStream dis = getStateDataInputStream(source)) {
             b = dis.readByte();
             ratio = dis.readFloat();
@@ -113,6 +111,12 @@ public class InternalWindowState extends View.BaseSavedState {
             wWidth = ratio*wHeight;
         }
 
+        //TODO Check if this window fits in the parent and force fit it if it does not.
         return new InternalWindow(parent, wLeft, wTop, wWidth, wHeight);
+    }
+
+    @Override
+    public String toString() {
+        return "b=" + b + " ratio=" + ratio + " sizeFraction=" + sizeFraction + " xFraction=" + xFraction + " yFraction=" + yFraction + " [" + super.toString() + "]";
     }
 }
