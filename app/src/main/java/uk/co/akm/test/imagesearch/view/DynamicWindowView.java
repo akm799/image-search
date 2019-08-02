@@ -107,9 +107,20 @@ public class DynamicWindowView extends View {
         if (state instanceof InternalWindowState && window == null) {
             final InternalWindowState savedWindowState = (InternalWindowState)state;
             super.onRestoreInstanceState(savedWindowState.getSuperState());
-            this.savedWindowState = savedWindowState;
+            this.savedWindowState = savedWindowState; // Cannot create the window from the window state yet because at this point our view dimensions are zero.
         } else {
             super.onRestoreInstanceState(state);
+        }
+    }
+
+    @Override
+    protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
+        super.onLayout(changed, left, top, right, bottom);
+
+        // Must restore the window from the saved state (if any) here, where the view has, by now, non-zero dimensions.
+        if (savedWindowState != null) {
+            window = savedWindowState.toInternalWindow(this);
+            savedWindowState = null;
         }
     }
 
@@ -117,12 +128,6 @@ public class DynamicWindowView extends View {
     public void onDraw(Canvas canvas) {
         if (borderPaint != null) {
             drawBorder(canvas);
-        }
-
-        // Must restore the window from the saved state (if any) here, where the view has, by now, non-zero dimensions.
-        if (savedWindowState != null) {
-            window = savedWindowState.toInternalWindow(this);
-            savedWindowState = null;
         }
 
         if (window != null) {
