@@ -111,8 +111,11 @@ final class InternalWindowState extends View.BaseSavedState {
             wWidth = ratio*wHeight;
         }
 
-        //TODO Check if this window fits in the parent and force fit it if it does not.
-        return new InternalWindow(parent, wLeft, wTop, wWidth, wHeight);
+        if (RangeFunctions.inRange(wLeft, wWidth, viewHeight, wTop, wHeight, viewHeight)) {
+            return new InternalWindow(parent, wLeft, wTop, wWidth, wHeight);
+        } else {
+            return null;
+        }
     }
 
     @Override

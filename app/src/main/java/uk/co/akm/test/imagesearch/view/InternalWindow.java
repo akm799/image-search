@@ -40,7 +40,7 @@ final class InternalWindow {
         final float initLeft = x - halfSide;
         final float initTop = y - halfSide;
 
-        return (inRange(initLeft, side, parent.getWidth()) && inRange(initTop, side, parent.getHeight()));
+        return RangeFunctions.inRange(initLeft, side, parent.getWidth(), initTop, side, parent.getHeight());
     }
 
     InternalWindow(View parent, float wLeft, float wTop, float wWidth, float wHeight) {
@@ -62,7 +62,7 @@ final class InternalWindow {
         final float initLeft = x - halfSide;
         final float initTop = y - halfSide;
 
-        if (inRange(initLeft, side, parent.getWidth()) && inRange(initTop, side, parent.getHeight())) {
+        if (RangeFunctions.inRange(initLeft, side, parent.getWidth(), initTop, side, parent.getHeight())) {
             wWidth = side;
             wHeight = side;
             wLeft = initLeft;
@@ -119,7 +119,7 @@ final class InternalWindow {
         final float newLeft = wLeft + dx;
         final float newTop = wTop + dy;
 
-        if (inRange(newLeft, wWidth, parent.getWidth()) && inRange(newTop, wHeight, parent.getHeight())) {
+        if (RangeFunctions.inRange(newLeft, wWidth, parent.getWidth(), newTop, wHeight, parent.getHeight())) {
             wLeft = newLeft;
             wTop = newTop;
             parent.invalidate();
@@ -159,7 +159,7 @@ final class InternalWindow {
         final float newWidth = wWidth + dx;
         if (newWidth > 0) {
             final float newLeft = wLeft - dx/2;
-            if (inRange(newLeft, newWidth, parent.getWidth())) {
+            if (RangeFunctions.inRange(newLeft, newWidth, parent.getWidth())) {
                 wLeft = newLeft;
                 wWidth = newWidth;
                 parent.invalidate();
@@ -184,16 +184,12 @@ final class InternalWindow {
         final float newHeight = wHeight + dy;
         if (newHeight > 0) {
             final float newTop = wTop - dy/2;
-            if (inRange(newTop, newHeight, parent.getHeight())) {
+            if (RangeFunctions.inRange(newTop, newHeight, parent.getHeight())) {
                 wTop = newTop;
                 wHeight = newHeight;
                 parent.invalidate();
             }
         }
-    }
-
-    private static boolean inRange(float start, float size, int maxSize) {
-        return start > 0 && start + size < maxSize;
     }
 
     @Override
