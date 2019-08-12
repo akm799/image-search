@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.provider.MediaStore;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -16,17 +17,10 @@ public final class PhotoFunctionsImpl implements PhotoFunctions  {
 
     @Override
     public void initiateImageCapture(Activity parent) {
-        final Intent intent = buildImageCaptureIntent();
-        parent.startActivityForResult(intent, REQUEST_CODE);
-    }
-
-    private Intent buildImageCaptureIntent() {
-        final Intent intent = new Intent();
-        intent.setType("image/*");
-        intent.setAction(Intent.ACTION_GET_CONTENT);
-        intent.addCategory(Intent.CATEGORY_OPENABLE);
-
-        return intent;
+        final Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        if (intent.resolveActivity(parent.getPackageManager()) != null) {
+            parent.startActivityForResult(intent, REQUEST_CODE);
+        }
     }
 
     @Override
@@ -36,10 +30,6 @@ public final class PhotoFunctionsImpl implements PhotoFunctions  {
 
     @Override
     public Bitmap readCapturedImage(Context context, Intent data) {
-        try (InputStream is = context.getContentResolver().openInputStream(data.getData())) {
-            return BitmapFactory.decodeStream(is);
-        } catch (IOException ioe) {
-            throw new RuntimeException(ioe);
-        }
+        return (Bitmap)data.getExtras().get("data");
     }
 }

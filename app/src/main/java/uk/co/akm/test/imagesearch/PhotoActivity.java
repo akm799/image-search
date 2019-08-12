@@ -10,10 +10,11 @@ import android.widget.ImageView;
 import android.widget.Toast;
 
 import uk.co.akm.test.imagesearch.photo.PhotoFunctions;
+import uk.co.akm.test.imagesearch.photo.impl.FilePhotoFunctions;
 import uk.co.akm.test.imagesearch.photo.impl.PhotoFunctionsImpl;
 
 public class PhotoActivity extends AppCompatActivity {
-    private final PhotoFunctions photoFunctions = new PhotoFunctionsImpl();
+    private final PhotoFunctions photoFunctions = new FilePhotoFunctions();
 
     private ImageView imageView;
 
