@@ -11,5 +11,5 @@ public interface PhotoFunctions {
 
     boolean imageCaptured(int requestCode, int resultCode);
 
-    Bitmap readCapturedImage(Context context, Intent data);
+    Bitmap readCapturedImage(Context context);
 }

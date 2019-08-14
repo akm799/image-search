@@ -65,7 +65,7 @@ public final class FilePhotoFunctions implements PhotoFunctions  {
     }
 
     @Override
-    public Bitmap readCapturedImage(Context context, Intent data) {
+    public Bitmap readCapturedImage(Context context) {
         final Uri photoURI = buildStoredPhotoFileUri(context);
 
         try (InputStream is = context.getContentResolver().openInputStream(photoURI)) {
