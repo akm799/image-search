@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
-    <uk.co.akm.test.imagesearch.view.DynamicWindowView
+    <uk.co.akm.test.imagesearch.view.window.DynamicWindowView
         android:id="@+id/dynamicWindowView"
         android:layout_width="312dp"
         android:layout_height="312dp"

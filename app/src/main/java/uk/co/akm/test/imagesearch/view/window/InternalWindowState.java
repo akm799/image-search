@@ -1,4 +1,4 @@
-package uk.co.akm.test.imagesearch.view;
+package uk.co.akm.test.imagesearch.view.window;
 
 import android.os.Parcel;
 import android.os.Parcelable;
