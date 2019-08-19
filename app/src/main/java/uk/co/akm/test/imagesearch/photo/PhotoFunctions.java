@@ -2,7 +2,6 @@ package uk.co.akm.test.imagesearch.photo;
 
 import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
 import android.graphics.Bitmap;
 
 public interface PhotoFunctions {
