@@ -43,16 +43,35 @@ public class PhotoWindowView extends View {
     private Rect buildDestinationRectangle(Bitmap bitmap) {
         final float bitmapAspectRatio = (float)bitmap.getWidth()/bitmap.getHeight();
 
-        float height = Math.round(getWidth()*bitmapAspectRatio);
-        if (height <= getHeight()) {
-            final int topMargin = Math.round((getHeight() - height) / 2);
-
-            return new Rect(0, topMargin, getWidth(), getHeight() - topMargin);
-        } else {
-            float width = Math.round(getHeight()/bitmapAspectRatio);
-            final int leftMargin = Math.round((getWidth() - width) / 2);
-
-            return new Rect(leftMargin, 0, getWidth() - leftMargin, getHeight());
+        final Rect widthMaintained = maintainWidth(bitmapAspectRatio);
+        if (widthMaintained != null) {
+            return widthMaintained;
         }
+
+        return maintainHeight(bitmapAspectRatio);
+    }
+
+    private Rect maintainWidth(float aspectRatio) {
+        final int w = getWidth();
+        final int h = Math.round(w/aspectRatio);
+        if (h > getHeight()) {
+            return null;
+        }
+
+        final int topMargin = Math.round((getHeight() - h) / 2f);
+
+        return new Rect(0, topMargin, getWidth(), getHeight() - topMargin);
+    }
+
+    private Rect maintainHeight(float aspectRatio) {
+        final int h = getHeight();
+        final int w = Math.round(h*aspectRatio);
+        if (w > getWidth()) {
+            return null;
+        }
+
+        final int leftMargin = Math.round((getWidth() - w) / 2f);
+
+        return new Rect(leftMargin, 0, getWidth() - leftMargin, getHeight());
     }
 }
