@@ -21,7 +21,7 @@
         </activity>
         <activity android:name=".PhotoCaptureActivity">
         </activity>
-        <activity android:name=".PhotoDisplayActivity"/>
+        <activity android:name=".PhotoDisplayActivity" android:theme="@style/Theme.AppCompat.Light.NoActionBar"/>
 
         <provider
             android:name="android.support.v4.content.FileProvider"
