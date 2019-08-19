@@ -3,6 +3,7 @@ package uk.co.akm.test.imagesearch.view.display;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
+import android.graphics.Matrix;
 import android.graphics.Rect;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
@@ -10,6 +11,7 @@ import android.view.View;
 
 public class PhotoWindowView extends View {
     private Bitmap photo;
+    private Rect photoRectangle;
 
     public PhotoWindowView(Context context) {
         super(context);
@@ -28,15 +30,25 @@ public class PhotoWindowView extends View {
     }
 
     public void setPhoto(Bitmap photo) {
-        this.photo = photo;
+        this.photo = rotateBitmap(photo);
         invalidate();
+    }
+
+    private Bitmap rotateBitmap(Bitmap bitmap) {
+        final Matrix rotation = new Matrix();
+        rotation.postRotate(90);
+
+        return Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), rotation, true);
     }
 
     @Override
     public void onDraw(Canvas canvas) {
         if (photo != null) {
-            final Rect dest = buildDestinationRectangle(photo);
-            canvas.drawBitmap(photo, null, dest, null);
+            if (photoRectangle == null) {
+                photoRectangle = buildDestinationRectangle(photo);
+            }
+
+            canvas.drawBitmap(photo, null, photoRectangle, null);
         }
     }
 
