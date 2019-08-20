@@ -9,13 +9,13 @@ import android.util.Log;
 import java.io.IOException;
 import java.io.InputStream;
 
-import uk.co.akm.test.imagesearch.photo.PhotoReference;
+import uk.co.akm.test.imagesearch.photo.PhotoReader;
 
-public final class ParcelablePhotoReference implements PhotoReference {
+public final class PhotoReaderImpl implements PhotoReader {
 
     @Override
     public Bitmap readCapturedImage(Context context, String photoName) {
-        final Uri photoURI = FilePhotoHelper.buildStoredPhotoFileUri(context, photoName);
+        final Uri photoURI = FilePhotoFunctions.buildStoredPhotoFileUri(context, photoName);
 
         try (InputStream is = context.getContentResolver().openInputStream(photoURI)) {
             return BitmapFactory.decodeStream(is);

@@ -8,12 +8,12 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.widget.Toast;
 
-import uk.co.akm.test.imagesearch.photo.PhotoReference;
-import uk.co.akm.test.imagesearch.photo.impl.FilePhotoFunctions;
+import uk.co.akm.test.imagesearch.photo.PhotoReader;
+import uk.co.akm.test.imagesearch.photo.impl.PhotoHandlerImpl;
 import uk.co.akm.test.imagesearch.view.display.PhotoWindowView;
 
 public class PhotoDisplayActivity extends AppCompatActivity {
-    private final PhotoReference photoReference = new FilePhotoFunctions();
+    private final PhotoReader photoReader = new PhotoHandlerImpl();
 
     static void start(Activity parent) {
         parent.startActivity(new Intent(parent, PhotoDisplayActivity.class));
@@ -29,7 +29,7 @@ public class PhotoDisplayActivity extends AppCompatActivity {
 
     private void displayCapturedPhoto(PhotoWindowView imageView) {
         try {
-            final Bitmap bitmap = photoReference.readCapturedImage(this, PhotoCaptureActivity.PHOTO_NAME);
+            final Bitmap bitmap = photoReader.readCapturedImage(this, PhotoCaptureActivity.PHOTO_NAME);
             imageView.setPhoto(bitmap);
         } catch (Exception e) {
             Log.e("PhotoDisplayActivity", "Error while reading the captured image.", e);
