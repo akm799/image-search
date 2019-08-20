@@ -11,6 +11,8 @@ import uk.co.akm.test.imagesearch.photo.impl.FilePhotoFunctions;
 public class PhotoCaptureActivity extends AppCompatActivity {
     private final PhotoFunctions photoFunctions = new FilePhotoFunctions();
 
+    public static final String PHOTO_NAME = "target";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -18,7 +20,7 @@ public class PhotoCaptureActivity extends AppCompatActivity {
     }
 
     public void onPhoto(View view) {
-        photoFunctions.initiateImageCapture(this);
+        photoFunctions.initiateImageCapture(this, PHOTO_NAME);
     }
 
     @Override

@@ -5,5 +5,5 @@ import android.graphics.Bitmap;
 
 public interface PhotoReference {
 
-    Bitmap readCapturedImage(Context context);
+    Bitmap readCapturedImage(Context context, String photoName);
 }

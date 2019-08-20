@@ -29,7 +29,7 @@ public class PhotoDisplayActivity extends AppCompatActivity {
 
     private void displayCapturedPhoto(PhotoWindowView imageView) {
         try {
-            final Bitmap bitmap = photoReference.readCapturedImage(this);
+            final Bitmap bitmap = photoReference.readCapturedImage(this, PhotoCaptureActivity.PHOTO_NAME);
             imageView.setPhoto(bitmap);
         } catch (Exception e) {
             Log.e("PhotoDisplayActivity", "Error while reading the captured image.", e);

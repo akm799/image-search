@@ -4,7 +4,7 @@ import android.app.Activity;
 
 public interface PhotoFunctions extends PhotoReference {
 
-    void initiateImageCapture(Activity parent);
+    void initiateImageCapture(Activity parent, String photoName);
 
     boolean imageCaptured(int requestCode, int resultCode);
 }
