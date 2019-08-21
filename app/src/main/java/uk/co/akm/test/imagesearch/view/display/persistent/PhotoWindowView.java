@@ -51,7 +51,7 @@ public class PhotoWindowView extends View {
         final Bitmap photo = photoReader.readCapturedImage(getContext(), photoName);
         if (photo != null) {
             this.photo = rotateBitmap(photo);
-            this.photoName = photoName; // Cannot display the photo yet because at this point our view dimensions are zero.
+            this.photoName = photoName; // Cannot display the photo yet because at this point our view dimensions may be zero.
             invalidate();
         }
     }
@@ -77,10 +77,12 @@ public class PhotoWindowView extends View {
 
     @Override
     protected void onRestoreInstanceState(Parcelable state) {
-        if (state instanceof PhotoWindowState && photoName == null) {
+        if (state instanceof PhotoWindowState) {
             final PhotoWindowState photoWindowState = (PhotoWindowState)state;
             super.onRestoreInstanceState(photoWindowState.getSuperState());
-            restoredPhotoName = photoWindowState.getPhotoName();
+            if (photoName == null) {
+                restoredPhotoName = photoWindowState.getPhotoName(); // Cannot display the photo yet because at this point our view dimensions are zero.
+            }
         } else {
             super.onRestoreInstanceState(state);
         }

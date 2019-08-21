@@ -16,6 +16,9 @@ public final class PhotoReaderImpl implements PhotoReader {
     @Override
     public Bitmap readCapturedImage(Context context, String photoName) {
         final Uri photoURI = FilePhotoFunctions.buildStoredPhotoFileUri(context, photoName);
+        if (photoURI == null) {
+            return null;
+        }
 
         try (InputStream is = context.getContentResolver().openInputStream(photoURI)) {
             return BitmapFactory.decodeStream(is);

@@ -5,12 +5,15 @@ import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Environment;
 import android.support.v4.content.FileProvider;
+import android.util.Log;
 
 import java.io.File;
 import java.io.IOException;
 
 
 public class FilePhotoFunctions {
+    private static final String TAG = "FilePhotoFunctions";
+
     private static final String IMAGE_FILE_EXTENSION = ".jpg";
     private static final String IMAGE_FILE_PROVIDER_AUTHORITY = "uk.co.akm.test.imagesearch.fileprovider.photo";
 
@@ -42,9 +45,14 @@ public class FilePhotoFunctions {
 
     public static Uri buildStoredPhotoFileUri(Context context, String photoName) {
         final String photoFilePath = readStoredPhotoFilePath(context, photoName);
+        if (photoFilePath == null) {
+            return null;
+        }
+
         final File photoFile = new File(photoFilePath);
         if (!photoFile.exists()) {
-            throw new IllegalStateException("No photo file '" + photoFilePath + "' found.");
+            Log.e(TAG, "No photo file '" + photoFilePath + "' found.");
+            return null;
         }
 
         return FileProvider.getUriForFile(context, IMAGE_FILE_PROVIDER_AUTHORITY, photoFile);
@@ -55,7 +63,7 @@ public class FilePhotoFunctions {
         final SharedPreferences prefs = sharedPreferences(context);
         final String photoFilePath = prefs.getString(photoKey, null);
         if (photoFilePath == null) {
-            throw new IllegalStateException("No photo file path stored for photo with name " + photoName + " under key: " + photoKey);
+            Log.e(TAG, "No photo file path stored for photo with name " + photoName + " under key: " + photoKey);
         }
 
         return photoFilePath;
