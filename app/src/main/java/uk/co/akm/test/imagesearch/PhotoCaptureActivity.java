@@ -9,9 +9,9 @@ import uk.co.akm.test.imagesearch.photo.PhotoHandler;
 import uk.co.akm.test.imagesearch.photo.impl.PhotoHandlerImpl;
 
 public class PhotoCaptureActivity extends AppCompatActivity {
-    private final PhotoHandler photoHandler = new PhotoHandlerImpl();
+    private static final String PHOTO_NAME = "target";
 
-    public static final String PHOTO_NAME = "target";
+    private final PhotoHandler photoHandler = new PhotoHandlerImpl();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -26,7 +26,7 @@ public class PhotoCaptureActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (photoHandler.imageCaptured(requestCode, resultCode)) {
-            PhotoDisplayActivity.start(this);
+            PhotoDisplayActivity.start(this, PHOTO_NAME);
         }
     }
 }
