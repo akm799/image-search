@@ -1,4 +1,4 @@
-package uk.co.akm.test.imagesearch.view.display;
+package uk.co.akm.test.imagesearch.view.display.transitory;
 
 import android.content.Context;
 import android.graphics.Bitmap;
