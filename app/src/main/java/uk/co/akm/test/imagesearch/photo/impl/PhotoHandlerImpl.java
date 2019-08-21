@@ -13,7 +13,7 @@ import uk.co.akm.test.imagesearch.photo.PhotoReader;
 public final class PhotoHandlerImpl implements PhotoHandler {
     private static final int REQUEST_CODE = 7257;
 
-    private final PhotoReader photoReference = new PhotoReaderImpl();
+    private final PhotoReader photoReader = new PhotoReaderImpl();
 
     @Override
     public void initiateImageCapture(Activity parent, String photoName) {
@@ -36,6 +36,11 @@ public final class PhotoHandlerImpl implements PhotoHandler {
 
     @Override
     public Bitmap readCapturedImage(Context context, String photoName) {
-        return photoReference.readCapturedImage(context, photoName);
+        return photoReader.readCapturedImage(context, photoName);
+    }
+
+    @Override
+    public boolean deleteCapturedImage(Context context, String photoName) {
+        return photoReader.deleteCapturedImage(context, photoName);
     }
 }

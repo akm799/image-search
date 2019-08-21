@@ -27,4 +27,9 @@ public final class PhotoReaderImpl implements PhotoReader {
             return null;
         }
     }
+
+    @Override
+    public boolean deleteCapturedImage(Context context, String photoName) {
+        return FilePhotoFunctions.deleteStoredPhotoFile(context, photoName);
+    }
 }

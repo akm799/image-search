@@ -13,7 +13,6 @@ import android.view.View;
 import uk.co.akm.test.imagesearch.photo.PhotoReader;
 import uk.co.akm.test.imagesearch.photo.impl.PhotoReaderImpl;
 
-//TODO Test this view.
 public class PhotoWindowView extends View {
     private Bitmap photo;
     private String photoName;
@@ -52,6 +51,7 @@ public class PhotoWindowView extends View {
         if (photo != null) {
             this.photo = rotateBitmap(photo);
             this.photoName = photoName; // Cannot display the photo yet because at this point our view dimensions may be zero.
+            photo.recycle();
             invalidate();
         }
     }
@@ -143,5 +143,17 @@ public class PhotoWindowView extends View {
         final int leftMargin = Math.round((getWidth() - w) / 2f);
 
         return new Rect(leftMargin, 0, getWidth() - leftMargin, getHeight());
+    }
+
+    public final void clear() {
+        if (photoName != null) {
+            photoReader.deleteCapturedImage(getContext(), photoName);
+            photo.recycle();
+
+            photo = null;
+            photoName = null;
+            photoRectangle = null;
+            restoredPhotoName = null;
+        }
     }
 }

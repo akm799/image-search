@@ -6,4 +6,6 @@ import android.graphics.Bitmap;
 public interface PhotoReader {
 
     Bitmap readCapturedImage(Context context, String photoName);
+
+    boolean deleteCapturedImage(Context context, String photoName);
 }

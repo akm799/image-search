@@ -27,4 +27,10 @@ public class PhotoDisplayActivity extends AppCompatActivity {
             ((PhotoWindowView) findViewById(R.id.photoView)).setPhoto(photoName);
         }
     }
+
+    @Override
+    public void onBackPressed() {
+        ((PhotoWindowView) findViewById(R.id.photoView)).clear();
+        super.onBackPressed();
+    }
 }
