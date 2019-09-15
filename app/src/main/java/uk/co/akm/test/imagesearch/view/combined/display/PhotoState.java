@@ -1,8 +1,6 @@
 package uk.co.akm.test.imagesearch.view.combined.display;
 
 import android.os.Parcel;
-import android.os.Parcelable;
-import android.view.View;
 
 public final class PhotoState {
     private final String photoName;
@@ -15,7 +13,7 @@ public final class PhotoState {
         photoName = source.readString();
     }
 
-    public void writeToParcel(Parcel out, int flags) {
+    public void writeToParcel(Parcel out) {
         out.writeString(photoName);
     }
 
