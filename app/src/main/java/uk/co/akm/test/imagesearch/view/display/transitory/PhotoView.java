@@ -9,23 +9,23 @@ import android.support.annotation.Nullable;
 import android.util.AttributeSet;
 import android.view.View;
 
-public class PhotoWindowView extends View {
+public class PhotoView extends View {
     private Bitmap photo;
     private Rect photoRectangle;
 
-    public PhotoWindowView(Context context) {
+    public PhotoView(Context context) {
         super(context);
     }
 
-    public PhotoWindowView(Context context, @Nullable AttributeSet attrs) {
+    public PhotoView(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
     }
 
-    public PhotoWindowView(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
+    public PhotoView(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
     }
 
-    public PhotoWindowView(Context context, @Nullable AttributeSet attrs, int defStyleAttr, int defStyleRes) {
+    public PhotoView(Context context, @Nullable AttributeSet attrs, int defStyleAttr, int defStyleRes) {
         super(context, attrs, defStyleAttr, defStyleRes);
     }
 

@@ -5,7 +5,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 
-import uk.co.akm.test.imagesearch.view.display.persistent.PhotoWindowView;
+import uk.co.akm.test.imagesearch.view.display.persistent.PhotoView;
 
 public class PhotoDisplayActivity extends AppCompatActivity {
     private static final String PHOTO_NAME_ARG_KEY = "PhotoDisplayActivity.Photo.Name.Arg_key";
@@ -24,13 +24,13 @@ public class PhotoDisplayActivity extends AppCompatActivity {
 
         final String photoName = getIntent().getStringExtra(PHOTO_NAME_ARG_KEY);
         if (photoName != null) {
-            ((PhotoWindowView) findViewById(R.id.photoView)).setPhoto(photoName);
+            ((PhotoView) findViewById(R.id.photoView)).setPhoto(photoName);
         }
     }
 
     @Override
     public void onBackPressed() {
-        ((PhotoWindowView) findViewById(R.id.photoView)).clear();
+        ((PhotoView) findViewById(R.id.photoView)).clear();
         super.onBackPressed();
     }
 }

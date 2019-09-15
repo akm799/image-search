@@ -13,7 +13,7 @@ import android.view.View;
 import uk.co.akm.test.imagesearch.photo.PhotoReader;
 import uk.co.akm.test.imagesearch.photo.impl.PhotoReaderImpl;
 
-public class PhotoWindowView extends View {
+public class PhotoView extends View {
     private Bitmap photo;
     private String photoName;
     private Rect photoRectangle;
@@ -22,22 +22,22 @@ public class PhotoWindowView extends View {
 
     private final PhotoReader photoReader = new PhotoReaderImpl();
 
-    public PhotoWindowView(Context context) {
+    public PhotoView(Context context) {
         super(context);
         init();
     }
 
-    public PhotoWindowView(Context context, @Nullable AttributeSet attrs) {
+    public PhotoView(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
         init();
     }
 
-    public PhotoWindowView(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
+    public PhotoView(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         init();
     }
 
-    public PhotoWindowView(Context context, @Nullable AttributeSet attrs, int defStyleAttr, int defStyleRes) {
+    public PhotoView(Context context, @Nullable AttributeSet attrs, int defStyleAttr, int defStyleRes) {
         super(context, attrs, defStyleAttr, defStyleRes);
         init();
     }
@@ -71,14 +71,14 @@ public class PhotoWindowView extends View {
         if (photoName == null) {
             return superState;
         } else {
-            return new PhotoWindowState(superState, photoName);
+            return new PhotoViewState(superState, photoName);
         }
     }
 
     @Override
     protected void onRestoreInstanceState(Parcelable state) {
-        if (state instanceof PhotoWindowState) {
-            final PhotoWindowState photoWindowState = (PhotoWindowState)state;
+        if (state instanceof PhotoViewState) {
+            final PhotoViewState photoWindowState = (PhotoViewState)state;
             super.onRestoreInstanceState(photoWindowState.getSuperState());
             if (photoName == null) {
                 restoredPhotoName = photoWindowState.getPhotoName(); // Cannot display the photo yet because at this point our view dimensions are zero.

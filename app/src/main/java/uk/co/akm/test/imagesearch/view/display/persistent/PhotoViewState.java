@@ -4,28 +4,28 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.view.View;
 
-final class PhotoWindowState extends View.BaseSavedState {
+final class PhotoViewState extends View.BaseSavedState {
     private final String photoName;
 
-    public static final Parcelable.Creator<PhotoWindowState> CREATOR = new Parcelable.Creator<PhotoWindowState>() {
+    public static final Parcelable.Creator<PhotoViewState> CREATOR = new Parcelable.Creator<PhotoViewState>() {
         @Override
-        public PhotoWindowState createFromParcel(Parcel parcel) {
-            return new PhotoWindowState(parcel);
+        public PhotoViewState createFromParcel(Parcel parcel) {
+            return new PhotoViewState(parcel);
         }
 
         @Override
-        public PhotoWindowState[] newArray(int size) {
-            return new PhotoWindowState[size];
+        public PhotoViewState[] newArray(int size) {
+            return new PhotoViewState[size];
         }
     };
 
-    PhotoWindowState(Parcelable superState, String photoName) {
+    PhotoViewState(Parcelable superState, String photoName) {
         super(superState);
 
         this.photoName = photoName;
     }
 
-    private PhotoWindowState(Parcel source) {
+    private PhotoViewState(Parcel source) {
         super(source);
 
         photoName = source.readString();
