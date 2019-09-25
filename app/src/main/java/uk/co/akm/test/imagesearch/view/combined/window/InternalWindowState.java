@@ -20,15 +20,14 @@ public final class InternalWindowState {
     private final float xFraction;
     private final float yFraction;
 
-    public InternalWindowState(
-            View parent,
-            float wLeft,
-            float wTop,
-            float wWidth,
-            float wHeight
-    ) {
+    InternalWindowState(View parent, InternalWindow window) {
         final int viewWidth = parent.getWidth();
         final int viewHeight = parent.getHeight();
+
+        final float wLeft = window.getWindowLeft();
+        final float wTop = window.getWindowTop();
+        final float wWidth = window.getWindowWidth();
+        final float wHeight = window.getWindowHeight();
 
         b = (viewWidth <= viewHeight ? WIDTH_BYTE : HEIGHT_BYTE);
         ratio = (b == WIDTH_BYTE ? wHeight/wWidth : wWidth/wHeight);

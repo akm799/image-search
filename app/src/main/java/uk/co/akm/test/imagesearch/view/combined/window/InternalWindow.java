@@ -70,7 +70,7 @@ public final class InternalWindow {
     }
 
     public InternalWindowState getState(View parent) {
-        return new InternalWindowState(parent, wLeft, wTop, wWidth, wHeight);
+        return new InternalWindowState(parent, this);
     }
 
     public void draw(Canvas canvas, Paint paint) {
@@ -189,6 +189,22 @@ public final class InternalWindow {
                 parent.invalidate();
             }
         }
+    }
+
+    float getWindowLeft() {
+        return wLeft;
+    }
+
+    float getWindowTop() {
+        return wTop;
+    }
+
+    float getWindowWidth() {
+        return wWidth;
+    }
+
+    float getWindowHeight() {
+        return wHeight;
     }
 
     @Override

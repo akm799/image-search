@@ -25,40 +25,25 @@ final class PhotoWindowState extends View.BaseSavedState {
     private final PhotoState photoState;
     private final InternalWindowState windowState;
 
-    PhotoWindowState(
-            Parcelable superState,
-            String photoName) {
+    PhotoWindowState(Parcelable superState, String photoName) {
         super(superState);
 
         photoState = new PhotoState(photoName);
         windowState = null;
     }
 
-    PhotoWindowState(
-            Parcelable superState,
-            View parent,
-            float wLeft,
-            float wTop,
-            float wWidth,
-            float wHeight) {
+    PhotoWindowState(Parcelable superState, InternalWindowState windowState) {
         super(superState);
 
-        photoState = null;
-        windowState = new InternalWindowState(parent, wLeft, wTop, wWidth, wHeight);
+        this.photoState = null;
+        this.windowState = windowState;
     }
 
-    PhotoWindowState(
-            Parcelable superState,
-            View parent,
-            float wLeft,
-            float wTop,
-            float wWidth,
-            float wHeight,
-            String photoName) {
+    PhotoWindowState(Parcelable superState, InternalWindowState windowState, String photoName) {
         super(superState);
 
-        photoState = new PhotoState(photoName);
-        windowState = new InternalWindowState(parent, wLeft, wTop, wWidth, wHeight);
+        this.windowState = windowState;
+        this.photoState = new PhotoState(photoName);
     }
 
     private PhotoWindowState(Parcel source) {
