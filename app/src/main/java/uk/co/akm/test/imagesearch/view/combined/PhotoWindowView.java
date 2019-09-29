@@ -2,9 +2,12 @@ package uk.co.akm.test.imagesearch.view.combined;
 
 import android.content.Context;
 import android.content.res.TypedArray;
+import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.Matrix;
 import android.graphics.Paint;
+import android.graphics.Rect;
 import android.os.Parcelable;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
@@ -12,6 +15,8 @@ import android.view.MotionEvent;
 import android.view.View;
 
 import uk.co.akm.test.imagesearch.R;
+import uk.co.akm.test.imagesearch.photo.PhotoReader;
+import uk.co.akm.test.imagesearch.photo.impl.PhotoReaderImpl;
 import uk.co.akm.test.imagesearch.view.combined.window.InternalWindow;
 
 public class PhotoWindowView extends View {
@@ -27,6 +32,14 @@ public class PhotoWindowView extends View {
 
     private InternalWindow window;
     private PhotoWindowState savedWindowState;
+
+    private Bitmap photo;
+    private String photoName;
+    private Rect photoRectangle;
+
+    private String restoredPhotoName;
+
+    private final PhotoReader photoReader = new PhotoReaderImpl();
 
     public PhotoWindowView(Context context) {
         super(context);
@@ -85,26 +98,52 @@ public class PhotoWindowView extends View {
         return paint;
     }
 
-    //TODO Consider the photo state when the photo display is added.
+    public void setPhoto(String photoName) {
+        final Bitmap photo = photoReader.readCapturedImage(getContext(), photoName);
+        if (photo != null) {
+            this.photo = rotateBitmap(photo);
+            this.photoName = photoName; // Cannot display the photo yet because at this point our view dimensions may be zero.
+            photo.recycle();
+            invalidate();
+        }
+    }
+
+    private Bitmap rotateBitmap(Bitmap bitmap) {
+        final Matrix rotation = new Matrix();
+        rotation.postRotate(90);
+
+        return Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), rotation, true);
+    }
+
     @Nullable
     @Override
     protected Parcelable onSaveInstanceState() {
         final Parcelable superState = super.onSaveInstanceState();
 
-        if (window == null) {
+        if (photoName == null && window == null) {
             return superState;
-        } else {
+        } else if (photoName == null) {
             return new PhotoWindowState(superState, window.getState(this));
+        } else if (window == null) {
+            return new PhotoWindowState(superState, photoName);
+        } else {
+            return new PhotoWindowState(superState, window.getState(this), photoName);
         }
     }
 
-    //TODO Consider the photo state when the photo display is added.
     @Override
     protected void onRestoreInstanceState(Parcelable state) {
-        if (state instanceof PhotoWindowState && window == null) {
-            final PhotoWindowState savedWindowState = (PhotoWindowState)state;
+        if (state instanceof PhotoWindowState) {
+            final PhotoWindowState savedWindowState = (PhotoWindowState) state;
             super.onRestoreInstanceState(savedWindowState.getSuperState());
-            this.savedWindowState = savedWindowState; // Cannot create the window from the window state yet because at this point our view dimensions are zero.
+
+            if (photoName == null) {
+                restoredPhotoName = savedWindowState.getPhotoName(); // Cannot display the photo yet because at this point our view dimensions are zero.
+            }
+
+            if (window == null) {
+                this.savedWindowState = savedWindowState; // Cannot create the window from the window state yet because at this point our view dimensions are zero.
+            }
         } else {
             super.onRestoreInstanceState(state);
         }
@@ -113,6 +152,12 @@ public class PhotoWindowView extends View {
     @Override
     protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
         super.onLayout(changed, left, top, right, bottom);
+
+        // Must display the photo from the saved state (if any) here, where the view has, by now, non-zero dimensions.
+        if (restoredPhotoName != null) {
+            setPhoto(restoredPhotoName);
+            restoredPhotoName = null;
+        }
 
         // Must restore the window from the saved state (if any) here, where the view has, by now, non-zero dimensions.
         if (savedWindowState != null) {
@@ -123,17 +168,31 @@ public class PhotoWindowView extends View {
 
     @Override
     public void onDraw(Canvas canvas) {
-        if (borderPaint != null) {
-            drawBorder(canvas);
-        }
+        drawPhoto(canvas);
+        drawDynamicWindow(canvas);
+        drawBorder(canvas);
+    }
 
+    private void drawPhoto(Canvas canvas) {
+        if (photo != null) {
+            if (photoRectangle == null) {
+                photoRectangle = PhotoRectangleFunctions.buildDestinationRectangle(this, photo);
+            }
+
+            canvas.drawBitmap(photo, null, photoRectangle, null);
+        }
+    }
+
+    private void drawDynamicWindow(Canvas canvas) {
         if (window != null) {
             window.draw(canvas, windowPaint);
         }
     }
 
     private void drawBorder(Canvas canvas) {
-        canvas.drawRect(0, 0, getWidth(), getHeight(), borderPaint);
+        if (borderPaint != null) {
+            canvas.drawRect(0, 0, getWidth(), getHeight(), borderPaint);
+        }
     }
 
     @Override
@@ -174,6 +233,18 @@ public class PhotoWindowView extends View {
     private void onChangePositionOrSizeTouchEvent(MotionEvent event) {
         if (window != null) {
             window.onChangePositionOrSizeTouchEvent(event);
+        }
+    }
+
+    public final void clear() {
+        if (photoName != null) {
+            photoReader.deleteCapturedImage(getContext(), photoName);
+            photo.recycle();
+
+            photo = null;
+            photoName = null;
+            photoRectangle = null;
+            restoredPhotoName = null;
         }
     }
 }

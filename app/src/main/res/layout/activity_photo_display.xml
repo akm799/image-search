@@ -5,7 +5,7 @@
     android:layout_height="match_parent"
     tools:context=".PhotoDisplayActivity">
 
-    <uk.co.akm.test.imagesearch.view.display.persistent.PhotoView
+    <uk.co.akm.test.imagesearch.view.combined.PhotoWindowView
         android:id="@+id/photoView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
