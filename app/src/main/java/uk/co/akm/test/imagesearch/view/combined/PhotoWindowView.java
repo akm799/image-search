@@ -254,9 +254,8 @@ public class PhotoWindowView extends View {
         }
 
         final Bitmap windowBitmap = createInternalWindowBitmap(window);
-        photoIO.writeImage(context, windowBitmap, imageName);
 
-        return true;
+        return photoIO.writeImage(context, windowBitmap, imageName);
     }
 
     private Bitmap createInternalWindowBitmap(InternalWindow window) {
