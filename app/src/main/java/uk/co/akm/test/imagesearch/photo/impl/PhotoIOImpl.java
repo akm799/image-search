@@ -10,9 +10,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-import uk.co.akm.test.imagesearch.photo.PhotoReader;
+import uk.co.akm.test.imagesearch.photo.PhotoIO;
 
-public final class PhotoReaderImpl implements PhotoReader {
+public final class PhotoIOImpl implements PhotoIO {
 
     @Override
     public Bitmap readCapturedImage(Context context, String photoName) {
@@ -34,6 +34,7 @@ public final class PhotoReaderImpl implements PhotoReader {
         return FilePhotoFunctions.deleteStoredPhotoFile(context, photoName);
     }
 
+    @Override
     public boolean writeImage(Context context, Bitmap bitmap, String photoName) {
         final Uri photoURI = FilePhotoFunctions.createPhotoFileUriForStoring(context, photoName);
 

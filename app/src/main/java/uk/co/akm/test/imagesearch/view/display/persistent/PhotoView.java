@@ -10,8 +10,8 @@ import android.support.annotation.Nullable;
 import android.util.AttributeSet;
 import android.view.View;
 
-import uk.co.akm.test.imagesearch.photo.PhotoReader;
-import uk.co.akm.test.imagesearch.photo.impl.PhotoReaderImpl;
+import uk.co.akm.test.imagesearch.photo.PhotoIO;
+import uk.co.akm.test.imagesearch.photo.impl.PhotoIOImpl;
 
 public class PhotoView extends View {
     private Bitmap photo;
@@ -20,7 +20,7 @@ public class PhotoView extends View {
 
     private String restoredPhotoName;
 
-    private final PhotoReader photoReader = new PhotoReaderImpl();
+    private final PhotoIO photoIO = new PhotoIOImpl();
 
     public PhotoView(Context context) {
         super(context);
@@ -47,7 +47,7 @@ public class PhotoView extends View {
     }
 
     public void setPhoto(String photoName) {
-        final Bitmap photo = photoReader.readCapturedImage(getContext(), photoName);
+        final Bitmap photo = photoIO.readCapturedImage(getContext(), photoName);
         if (photo != null) {
             this.photo = rotateBitmap(photo);
             this.photoName = photoName; // Cannot display the photo yet because at this point our view dimensions may be zero.
@@ -147,7 +147,7 @@ public class PhotoView extends View {
 
     public final void clear() {
         if (photoName != null) {
-            photoReader.deleteCapturedImage(getContext(), photoName);
+            photoIO.deleteCapturedImage(getContext(), photoName);
             photo.recycle();
 
             photo = null;

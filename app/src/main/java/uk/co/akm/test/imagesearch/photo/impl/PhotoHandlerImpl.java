@@ -8,12 +8,12 @@ import android.net.Uri;
 import android.provider.MediaStore;
 
 import uk.co.akm.test.imagesearch.photo.PhotoHandler;
-import uk.co.akm.test.imagesearch.photo.PhotoReader;
+import uk.co.akm.test.imagesearch.photo.PhotoIO;
 
 public final class PhotoHandlerImpl implements PhotoHandler {
     private static final int REQUEST_CODE = 7257;
 
-    private final PhotoReader photoReader = new PhotoReaderImpl();
+    private final PhotoIO photoIO = new PhotoIOImpl();
 
     @Override
     public void initiateImageCapture(Activity parent, String photoName) {
@@ -36,11 +36,16 @@ public final class PhotoHandlerImpl implements PhotoHandler {
 
     @Override
     public Bitmap readCapturedImage(Context context, String photoName) {
-        return photoReader.readCapturedImage(context, photoName);
+        return photoIO.readCapturedImage(context, photoName);
     }
 
     @Override
     public boolean deleteCapturedImage(Context context, String photoName) {
-        return photoReader.deleteCapturedImage(context, photoName);
+        return photoIO.deleteCapturedImage(context, photoName);
+    }
+
+    @Override
+    public boolean writeImage(Context context, Bitmap bitmap, String photoName) {
+        return photoIO.writeImage(context, bitmap, photoName);
     }
 }
