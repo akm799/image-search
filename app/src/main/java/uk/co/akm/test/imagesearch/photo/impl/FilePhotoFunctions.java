@@ -2,6 +2,7 @@ package uk.co.akm.test.imagesearch.photo.impl;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Environment;
 import android.support.v4.content.FileProvider;
@@ -19,6 +20,8 @@ class FilePhotoFunctions {
 
     private static final String PHOTO_FILE_PATH_KEY = "photo.file.path_key:";
     private static final String SHARED_PREFERENCES_FILE_KEY = "uk.co.akm.test.imagesearch.shared_preferences_storage_file";
+
+    public static final Bitmap.CompressFormat COMPRESS_FORMAT = Bitmap.CompressFormat.JPEG;
 
     static Uri createPhotoFileUriForStoring(Context context, String photoName) {
         final File photoFile = createImageFile(context, photoName);
@@ -70,7 +73,12 @@ class FilePhotoFunctions {
             return false;
         }
 
-        return photoFile.delete();
+        if (photoFile.delete()) {
+            deleteStoredPhotoFilePath(context, photoName);
+            return true;
+        } else {
+            return false;
+        }
     }
 
     private static String readStoredPhotoFilePath(Context context, String photoName) {
@@ -82,6 +90,11 @@ class FilePhotoFunctions {
         }
 
         return photoFilePath;
+    }
+
+    private static void deleteStoredPhotoFilePath(Context context, String photoName) {
+        final String photoKey = buildPhotoKey(photoName);
+        sharedPreferences(context).edit().remove(photoKey).apply();
     }
 
     private static String buildPhotoKey(String photoName) {

@@ -191,19 +191,19 @@ public final class InternalWindow {
         }
     }
 
-    float getWindowLeft() {
+    public float getWindowLeft() {
         return wLeft;
     }
 
-    float getWindowTop() {
+    public float getWindowTop() {
         return wTop;
     }
 
-    float getWindowWidth() {
+    public float getWindowWidth() {
         return wWidth;
     }
 
-    float getWindowHeight() {
+    public float getWindowHeight() {
         return wHeight;
     }
 

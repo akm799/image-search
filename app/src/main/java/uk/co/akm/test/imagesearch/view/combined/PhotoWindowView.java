@@ -247,4 +247,24 @@ public class PhotoWindowView extends View {
             restoredPhotoName = null;
         }
     }
+
+    public final boolean saveInternalWindowBitmap(Context context, String imageName) {
+        if (window == null) {
+            return false;
+        }
+
+        final Bitmap windowBitmap = createInternalWindowBitmap(window);
+        //TODO Save the bitmap to disk.
+
+        return true;
+    }
+
+    private Bitmap createInternalWindowBitmap(InternalWindow window) {
+        final int x = Math.round(window.getWindowLeft()) - photoRectangle.left;
+        final int y = Math.round(window.getWindowTop()) - photoRectangle.top;
+        final int width = (int)window.getWindowWidth();
+        final int height = (int)window.getWindowHeight();
+
+        return Bitmap.createBitmap(photo, x, y, width, height);
+    }
 }
