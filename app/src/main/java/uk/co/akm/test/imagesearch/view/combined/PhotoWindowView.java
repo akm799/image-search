@@ -11,6 +11,7 @@ import android.graphics.Rect;
 import android.os.Parcelable;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 
@@ -264,6 +265,11 @@ public class PhotoWindowView extends View {
         final int width = (int)window.getWindowWidth();
         final int height = (int)window.getWindowHeight();
 
+Log.d("TEMP", "view=(" + getWidth() + ", " + getHeight() + ")");
+Log.d("TEMP", "large_window=(" + photoRectangle.left + ", " + photoRectangle.top + ") (" + photoRectangle.width() + ", " + photoRectangle.height() + ")");
+Log.d("TEMP", "large_bitmap=(" + 0 + ", " + 0 + ") (" + photo.getWidth() + ", " + photo.getHeight() + ")");
+Log.d("TEMP", "small_window=(" + window.getWindowLeft() + ", " + window.getWindowTop() + ") (" + window.getWindowWidth() + ", " + window.getWindowHeight() + ")");
+Log.d("TEMP", "small_bitmap=(" + x + ", " + y + ") (" + width + ", " + height + ")");
         return Bitmap.createBitmap(photo, x, y, width, height);
     }
 }

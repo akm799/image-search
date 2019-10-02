@@ -22,6 +22,7 @@
             </intent-filter>
         </activity>
         <activity android:name=".PhotoDisplayActivity" android:theme="@style/Theme.AppCompat.Light.NoActionBar"/>
+        <activity android:name=".TempPhotoDisplayActivity" android:theme="@style/Theme.AppCompat.Light.NoActionBar"/>
 
         <provider
             android:name="android.support.v4.content.FileProvider"

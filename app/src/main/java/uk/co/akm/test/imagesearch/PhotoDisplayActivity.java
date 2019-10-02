@@ -10,6 +10,8 @@ import uk.co.akm.test.imagesearch.view.combined.PhotoWindowView;
 public class PhotoDisplayActivity extends AppCompatActivity {
     private static final String PHOTO_NAME_ARG_KEY = "PhotoDisplayActivity.Photo.Name.Arg_key";
 
+    private PhotoWindowView photoView;
+
     static void start(Activity parent, String photoName) {
         final Intent intent = new Intent(parent, PhotoDisplayActivity.class);
         intent.putExtra(PHOTO_NAME_ARG_KEY, photoName);
@@ -22,15 +24,22 @@ public class PhotoDisplayActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_photo_display);
 
+        photoView = findViewById(R.id.photoView);
+
         final String photoName = getIntent().getStringExtra(PHOTO_NAME_ARG_KEY);
         if (photoName != null) {
-            ((PhotoWindowView) findViewById(R.id.photoView)).setPhoto(photoName);
+            photoView.setPhoto(photoName);
         }
     }
 
     @Override
     public void onBackPressed() {
-        ((PhotoWindowView) findViewById(R.id.photoView)).clear();
+        final String smallImageName = "selected_section";
+        if (photoView.saveInternalWindowBitmap(this, smallImageName)) {
+            TempPhotoDisplayActivity.start(this, smallImageName);
+        }
+
+        photoView.clear();
         super.onBackPressed();
     }
 }
