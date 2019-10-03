@@ -11,7 +11,6 @@ import android.graphics.Rect;
 import android.os.Parcelable;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 
@@ -254,22 +253,22 @@ public class PhotoWindowView extends View {
             return false;
         }
 
-        final Bitmap windowBitmap = createInternalWindowBitmap(window);
+        final Bitmap windowBitmap = createInternalWindowBitmap(photo, window);
 
         return photoIO.writeImage(context, windowBitmap, imageName);
     }
 
-    private Bitmap createInternalWindowBitmap(InternalWindow window) {
-        final int x = Math.round(window.getWindowLeft()) - photoRectangle.left;
-        final int y = Math.round(window.getWindowTop()) - photoRectangle.top;
-        final int width = (int)window.getWindowWidth();
-        final int height = (int)window.getWindowHeight();
+    private Bitmap createInternalWindowBitmap(Bitmap bitmap, InternalWindow window) {
+        final float leftFraction = (window.getWindowLeft() - photoRectangle.left)/photoRectangle.width();
+        final float topFraction = (window.getWindowTop() - photoRectangle.top)/photoRectangle.height();
+        final float widthFraction = window.getWindowWidth()/photoRectangle.width();
+        final float heightFraction = window.getWindowHeight()/photoRectangle.height();
 
-Log.d("TEMP", "view=(" + getWidth() + ", " + getHeight() + ")");
-Log.d("TEMP", "large_window=(" + photoRectangle.left + ", " + photoRectangle.top + ") (" + photoRectangle.width() + ", " + photoRectangle.height() + ")");
-Log.d("TEMP", "large_bitmap=(" + 0 + ", " + 0 + ") (" + photo.getWidth() + ", " + photo.getHeight() + ")");
-Log.d("TEMP", "small_window=(" + window.getWindowLeft() + ", " + window.getWindowTop() + ") (" + window.getWindowWidth() + ", " + window.getWindowHeight() + ")");
-Log.d("TEMP", "small_bitmap=(" + x + ", " + y + ") (" + width + ", " + height + ")");
-        return Bitmap.createBitmap(photo, x, y, width, height);
+        final int x = Math.round(leftFraction*bitmap.getWidth());
+        final int y = Math.round(topFraction*bitmap.getHeight());
+        final int width = (int)(widthFraction*bitmap.getWidth());
+        final int height = (int)(heightFraction*bitmap.getHeight());
+
+        return Bitmap.createBitmap(bitmap, x, y, width, height);
     }
 }
