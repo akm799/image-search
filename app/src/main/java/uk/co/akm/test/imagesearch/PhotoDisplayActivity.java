@@ -1,6 +1,8 @@
 package uk.co.akm.test.imagesearch;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Bundle;
@@ -14,6 +16,7 @@ public class PhotoDisplayActivity extends AppCompatActivity {
     private static final String TAG = PhotoDisplayActivity.class.getName();
     private static final String PHOTO_NAME_ARG_KEY = "PhotoDisplayActivity.Photo.Name.Arg_key";
 
+    private AlertDialog saveDialog;
     private PhotoWindowView photoView;
 
     static void start(Activity parent, String photoName) {
@@ -38,16 +41,42 @@ public class PhotoDisplayActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
+        if (photoView.hasInternalWindowBitmap()) {
+            showSaveSelectionDialog();
+        } else {
+            clearAndPressBack();
+        }
+    }
+
+    private void showSaveSelectionDialog() {
+        new AlertDialog.Builder(this)
+                .setTitle("Save Selection")
+                .setMessage("Do you want to save the selected image section?")
+                .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int which) {
+                        dismissSaveDialog();
+                        onSaveImageSelection();
+                    }
+                })
+                .setNegativeButton("No", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int which) {
+                        dismissSaveDialog();
+                        clearAndPressBack();
+                    }
+                }).show();
+    }
+
+    private void onSaveImageSelection() {
         try {
             if (!saveAndDisplaySelectedImageSection()) {
-                super.onBackPressed();
+                clearAndPressBack();
             }
-            // Back is going to be 'pressed' when the asynchronous task we launch finishes.
+            // We have an image selection and we have launched an asynchronous task to save and display it. The back-button is going to be 'pressed' when the task finishes.
         } catch (Exception e) {
             Log.e(TAG, "Error when overriding the back button press.", e);
-            super.onBackPressed();
-        } finally {
-            clear();
+            clearAndPressBack();
         }
     }
 
@@ -61,11 +90,23 @@ public class PhotoDisplayActivity extends AppCompatActivity {
         }
     }
 
+    public final void clearAndPressBack() {
+        clear();
+        super.onBackPressed();
+    }
+
     private void clear() {
         try {
             photoView.clear();
         } catch (Exception e) {
             Log.e(TAG, "Error when clearing the photo (selection) view.", e);
+        }
+    }
+
+    private void dismissSaveDialog() {
+        if (saveDialog != null) {
+            saveDialog.dismiss();
+            saveDialog = null;
         }
     }
 }

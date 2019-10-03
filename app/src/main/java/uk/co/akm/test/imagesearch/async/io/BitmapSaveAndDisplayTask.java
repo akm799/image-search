@@ -1,10 +1,10 @@
 package uk.co.akm.test.imagesearch.async.io;
 
-import android.app.Activity;
 import android.graphics.Bitmap;
 import android.os.AsyncTask;
 import android.util.Log;
 
+import uk.co.akm.test.imagesearch.PhotoDisplayActivity;
 import uk.co.akm.test.imagesearch.TempPhotoDisplayActivity;
 import uk.co.akm.test.imagesearch.photo.PhotoIO;
 import uk.co.akm.test.imagesearch.photo.impl.PhotoIOImpl;
@@ -14,9 +14,9 @@ public final class BitmapSaveAndDisplayTask extends AsyncTask<BitmapSaveParams, 
 
     private final PhotoIO photoIO = new PhotoIOImpl();
 
-    private final Activity parent;
+    private final PhotoDisplayActivity parent;
 
-    public BitmapSaveAndDisplayTask(Activity parent) {
+    public BitmapSaveAndDisplayTask(PhotoDisplayActivity parent) {
         this.parent = parent;
     }
 
@@ -31,7 +31,7 @@ public final class BitmapSaveAndDisplayTask extends AsyncTask<BitmapSaveParams, 
 
     private String saveBitmap(BitmapSaveParams... params) {
         try {
-            return photoIO.writeImage(parent, params[0].bitmap, params[0].photoName) ? params[0].photoName : null;
+            return photoIO.writeImage(parent.getApplicationContext(), params[0].bitmap, params[0].photoName) ? params[0].photoName : null;
         } catch (Exception e) {
             Log.e(TAG, "Error when trying to save the selected image section.", e);
             return null;
@@ -51,7 +51,7 @@ public final class BitmapSaveAndDisplayTask extends AsyncTask<BitmapSaveParams, 
     @Override
     protected void onPostExecute(String photoName) {
         displayBitmap(photoName);
-        parent.onBackPressed();
+        parent.clearAndPressBack();
     }
 
     private void displayBitmap(String photoName) {
@@ -66,6 +66,6 @@ public final class BitmapSaveAndDisplayTask extends AsyncTask<BitmapSaveParams, 
 
     @Override
     protected void onCancelled(String s) {
-        parent.onBackPressed();
+        parent.clearAndPressBack();
     }
 }

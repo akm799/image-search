@@ -248,6 +248,10 @@ public class PhotoWindowView extends View {
         }
     }
 
+    public final boolean hasInternalWindowBitmap() {
+        return (window != null);
+    }
+
     public final Bitmap getInternalWindowBitmap() {
         if (window == null) {
             return null;
