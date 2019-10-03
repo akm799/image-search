@@ -12,10 +12,10 @@ import uk.co.akm.test.imagesearch.photo.impl.PhotoIOImpl;
 
 //TODO Delete or rename this class to indicate it is used only fore debugging.
 // Debug activity to display the small image we have captured so we know it has been captured correctly.
-public class TempPhotoDisplayActivity extends AppCompatActivity {
+public final class TempPhotoDisplayActivity extends AppCompatActivity {
     private static final String PHOTO_NAME_ARG_KEY = "TempPhotoDisplayActivity.Small.Photo.Name.Arg_key";
 
-    static void start(Activity parent, String photoName) {
+    public static void start(Activity parent, String photoName) {
         final Intent intent = new Intent(parent, TempPhotoDisplayActivity.class);
         intent.putExtra(PHOTO_NAME_ARG_KEY, photoName);
 

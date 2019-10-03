@@ -248,14 +248,12 @@ public class PhotoWindowView extends View {
         }
     }
 
-    public final boolean saveInternalWindowBitmap(Context context, String imageName) {
+    public final Bitmap getInternalWindowBitmap() {
         if (window == null) {
-            return false;
+            return null;
         }
 
-        final Bitmap windowBitmap = createInternalWindowBitmap(photo, window);
-
-        return photoIO.writeImage(context, windowBitmap, imageName);
+        return createInternalWindowBitmap(photo, window);
     }
 
     private Bitmap createInternalWindowBitmap(Bitmap bitmap, InternalWindow window) {

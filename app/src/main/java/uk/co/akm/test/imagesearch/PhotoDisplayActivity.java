@@ -2,12 +2,16 @@ package uk.co.akm.test.imagesearch;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 
+import uk.co.akm.test.imagesearch.async.io.BitmapSaveAndDisplayTask;
 import uk.co.akm.test.imagesearch.view.combined.PhotoWindowView;
 
 public class PhotoDisplayActivity extends AppCompatActivity {
+    private static final String TAG = PhotoDisplayActivity.class.getName();
     private static final String PHOTO_NAME_ARG_KEY = "PhotoDisplayActivity.Photo.Name.Arg_key";
 
     private PhotoWindowView photoView;
@@ -34,12 +38,34 @@ public class PhotoDisplayActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        final String smallImageName = "selected_section";
-        if (photoView.saveInternalWindowBitmap(this, smallImageName)) {
-            TempPhotoDisplayActivity.start(this, smallImageName);
+        try {
+            if (!saveAndDisplaySelectedImageSection()) {
+                super.onBackPressed();
+            }
+            // Back is going to be 'pressed' when the asynchronous task we launch finishes.
+        } catch (Exception e) {
+            Log.e(TAG, "Error when overriding the back button press.", e);
+            super.onBackPressed();
+        } finally {
+            clear();
         }
+    }
 
-        photoView.clear();
-        super.onBackPressed();
+    private boolean saveAndDisplaySelectedImageSection() {
+        final Bitmap smallImageBitmap = photoView.getInternalWindowBitmap();
+        if (smallImageBitmap != null) {
+            new BitmapSaveAndDisplayTask(this).saveAndDisplay(smallImageBitmap, "selected_section");
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    private void clear() {
+        try {
+            photoView.clear();
+        } catch (Exception e) {
+            Log.e(TAG, "Error when clearing the photo (selection) view.", e);
+        }
     }
 }
