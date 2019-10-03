@@ -2,11 +2,11 @@ package uk.co.akm.test.imagesearch;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.widget.ImageView;
 
+import uk.co.akm.test.imagesearch.async.io.BitmapReadAndDisplayTask;
 import uk.co.akm.test.imagesearch.photo.PhotoIO;
 import uk.co.akm.test.imagesearch.photo.impl.PhotoIOImpl;
 
@@ -28,21 +28,28 @@ public final class TempPhotoDisplayActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_temp_small_photo_display);
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
 
         final String photoName = getIntent().getStringExtra(PHOTO_NAME_ARG_KEY);
         if (photoName != null) {
-            final Bitmap smallPhoto = photoIO.readCapturedImage(this, photoName);
-            ((ImageView) findViewById(R.id.smallPhotoView)).setImageBitmap(smallPhoto);
+            final ImageView imageView = findViewById(R.id.smallPhotoView);
+            new BitmapReadAndDisplayTask(this.getApplicationContext(), imageView).execute(photoName);
         }
     }
 
     @Override
     public void onBackPressed() {
-        final String photoName = getIntent().getStringExtra(PHOTO_NAME_ARG_KEY);
-        if (photoName != null) {
-            photoIO.deleteCapturedImage(this, photoName);
+        try {
+            final String photoName = getIntent().getStringExtra(PHOTO_NAME_ARG_KEY);
+            if (photoName != null) {
+                photoIO.deleteCapturedImage(this, photoName);
+            }
+        } finally {
+            super.onBackPressed();
         }
-
-        super.onBackPressed();
     }
 }
