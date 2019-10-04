@@ -1,10 +1,8 @@
 package uk.co.akm.test.imagesearch.async.io;
 
-import android.content.Context;
 import android.graphics.Bitmap;
 import android.os.AsyncTask;
 import android.util.Log;
-import android.widget.ImageView;
 
 import uk.co.akm.test.imagesearch.photo.PhotoIO;
 import uk.co.akm.test.imagesearch.photo.impl.PhotoIOImpl;
@@ -14,18 +12,16 @@ public final class BitmapReadAndDisplayTask extends AsyncTask<String, Void, Bitm
 
     private final PhotoIO photoIO = new PhotoIOImpl();
 
-    private final Context context;
-    private final ImageView imageView;
+    private final ImageDisplay<Bitmap> parent;
 
-    public BitmapReadAndDisplayTask(Context context, ImageView imageView) {
-        this.context = context;
-        this.imageView = imageView;
+    public BitmapReadAndDisplayTask(ImageDisplay<Bitmap> parent) {
+        this.parent = parent;
     }
 
     @Override
     protected Bitmap doInBackground(String... params) {
         try {
-            return photoIO.readCapturedImage(context, params[0]);
+            return photoIO.readCapturedImage(parent.getContext(), params[0]);
         } catch (Exception e) {
             Log.e(TAG, "Error when trying to read the saved image section.", e);
             return null;
@@ -34,8 +30,8 @@ public final class BitmapReadAndDisplayTask extends AsyncTask<String, Void, Bitm
 
     @Override
     protected void onPostExecute(Bitmap bitmap) {
-        if (bitmap != null && imageView != null) {
-            imageView.setImageBitmap(bitmap);
+        if (bitmap != null && parent != null) {
+            parent.display(bitmap);
         }
     }
 }
