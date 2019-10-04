@@ -10,13 +10,16 @@ import uk.co.akm.test.imagesearch.async.io.BitmapReadAndDisplayTask;
 import uk.co.akm.test.imagesearch.photo.PhotoIO;
 import uk.co.akm.test.imagesearch.photo.impl.PhotoIOImpl;
 
-//TODO Delete or rename this class to indicate it is used only fore debugging.
-// Debug activity to display the small image we have captured so we know it has been captured correctly.
-public final class TempPhotoDisplayActivity extends AppCompatActivity {
-    private static final String PHOTO_NAME_ARG_KEY = "TempPhotoDisplayActivity.Small.Photo.Name.Arg_key";
+/**
+ * This activity is used to display the image section selected and captured in the PhotoDisplayActivity.
+ * The only purpose for such a display is for debugging, i.e. making sure that the selected image section
+ * was captured correctly.
+ */
+public final class DebugPhotoDisplayActivity extends AppCompatActivity {
+    private static final String PHOTO_NAME_ARG_KEY = "DebugPhotoDisplayActivity.Small.Photo.Name.Arg_key";
 
     public static void start(Activity parent, String photoName) {
-        final Intent intent = new Intent(parent, TempPhotoDisplayActivity.class);
+        final Intent intent = new Intent(parent, DebugPhotoDisplayActivity.class);
         intent.putExtra(PHOTO_NAME_ARG_KEY, photoName);
 
         parent.startActivity(intent);
@@ -27,7 +30,7 @@ public final class TempPhotoDisplayActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_temp_small_photo_display);
+        setContentView(R.layout.activity_debug_small_photo_display);
     }
 
     @Override

@@ -5,7 +5,7 @@ import android.os.AsyncTask;
 import android.util.Log;
 
 import uk.co.akm.test.imagesearch.PhotoDisplayActivity;
-import uk.co.akm.test.imagesearch.TempPhotoDisplayActivity;
+import uk.co.akm.test.imagesearch.DebugPhotoDisplayActivity;
 import uk.co.akm.test.imagesearch.photo.PhotoIO;
 import uk.co.akm.test.imagesearch.photo.impl.PhotoIOImpl;
 
@@ -57,7 +57,7 @@ public final class BitmapSaveAndDisplayTask extends AsyncTask<BitmapSaveParams, 
     private void displayBitmap(String photoName) {
         if (photoName != null) {
             try {
-                TempPhotoDisplayActivity.start(parent, photoName);
+                DebugPhotoDisplayActivity.start(parent, photoName);
             } catch (Exception e) {
                 Log.e(TAG, "Error when trying to display the saved image section.", e);
             }
