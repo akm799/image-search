@@ -2,6 +2,7 @@ package uk.co.akm.test.imagesearch;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -10,9 +11,10 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 
 import uk.co.akm.test.imagesearch.async.io.BitmapSaveAndDisplayTask;
+import uk.co.akm.test.imagesearch.async.io.ImageDisplayWithAfterAction;
 import uk.co.akm.test.imagesearch.view.combined.PhotoWindowView;
 
-public class PhotoDisplayActivity extends AppCompatActivity {
+public class PhotoDisplayActivity extends AppCompatActivity implements ImageDisplayWithAfterAction<String> {
     private static final String TAG = PhotoDisplayActivity.class.getName();
     private static final String PHOTO_NAME_ARG_KEY = "PhotoDisplayActivity.Photo.Name.Arg_key";
 
@@ -37,6 +39,21 @@ public class PhotoDisplayActivity extends AppCompatActivity {
         if (photoName != null) {
             photoView.setPhoto(photoName);
         }
+    }
+
+    @Override
+    public void afterDisplay() {
+        clearAndPressBack();
+    }
+
+    @Override
+    public Context getContext() {
+        return getApplicationContext();
+    }
+
+    @Override
+    public void display(String photoName) {
+        DebugPhotoDisplayActivity.start(this, photoName);
     }
 
     @Override
@@ -90,7 +107,7 @@ public class PhotoDisplayActivity extends AppCompatActivity {
         }
     }
 
-    public final void clearAndPressBack() {
+    private void clearAndPressBack() {
         clear();
         super.onBackPressed();
     }

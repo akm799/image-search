@@ -4,8 +4,6 @@ import android.graphics.Bitmap;
 import android.os.AsyncTask;
 import android.util.Log;
 
-import uk.co.akm.test.imagesearch.PhotoDisplayActivity;
-import uk.co.akm.test.imagesearch.DebugPhotoDisplayActivity;
 import uk.co.akm.test.imagesearch.photo.PhotoIO;
 import uk.co.akm.test.imagesearch.photo.impl.PhotoIOImpl;
 
@@ -14,9 +12,9 @@ public final class BitmapSaveAndDisplayTask extends AsyncTask<BitmapSaveParams, 
 
     private final PhotoIO photoIO = new PhotoIOImpl();
 
-    private final PhotoDisplayActivity parent;
+    private final ImageDisplayWithAfterAction<String> parent;
 
-    public BitmapSaveAndDisplayTask(PhotoDisplayActivity parent) {
+    public BitmapSaveAndDisplayTask(ImageDisplayWithAfterAction<String> parent) {
         this.parent = parent;
     }
 
@@ -31,7 +29,7 @@ public final class BitmapSaveAndDisplayTask extends AsyncTask<BitmapSaveParams, 
 
     private String saveBitmap(BitmapSaveParams... params) {
         try {
-            return photoIO.writeImage(parent.getApplicationContext(), params[0].bitmap, params[0].photoName) ? params[0].photoName : null;
+            return photoIO.writeImage(parent.getContext(), params[0].bitmap, params[0].photoName) ? params[0].photoName : null;
         } catch (Exception e) {
             Log.e(TAG, "Error when trying to save the selected image section.", e);
             return null;
@@ -51,13 +49,13 @@ public final class BitmapSaveAndDisplayTask extends AsyncTask<BitmapSaveParams, 
     @Override
     protected void onPostExecute(String photoName) {
         displayBitmap(photoName);
-        parent.clearAndPressBack();
+        parent.afterDisplay();
     }
 
     private void displayBitmap(String photoName) {
         if (photoName != null) {
             try {
-                DebugPhotoDisplayActivity.start(parent, photoName);
+                parent.display(photoName);
             } catch (Exception e) {
                 Log.e(TAG, "Error when trying to display the saved image section.", e);
             }
@@ -66,6 +64,6 @@ public final class BitmapSaveAndDisplayTask extends AsyncTask<BitmapSaveParams, 
 
     @Override
     protected void onCancelled(String s) {
-        parent.clearAndPressBack();
+        parent.afterDisplay();
     }
 }
