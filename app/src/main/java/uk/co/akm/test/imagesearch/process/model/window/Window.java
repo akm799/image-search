@@ -16,6 +16,9 @@ public class Window {
     public final int yMin;
     public final int yMax;
 
+    public final int left;
+    public final int top;
+
     public Window(Window window) {
         this.width = window.width;
         this.height = window.height;
@@ -23,6 +26,9 @@ public class Window {
         this.xMax = window.xMax;
         this.yMin = window.yMin;
         this.yMax = window.yMax;
+
+        left = xMin;
+        top = yMin;
     }
 
     public Window(Rectangle rectangle) {
@@ -32,10 +38,13 @@ public class Window {
         xMax = rectangle.x + rectangle.width - 1;
         yMin = rectangle.y;
         yMax = rectangle.y + rectangle.height - 1;
+
+        left = xMin;
+        top = yMin;
     }
 
     @Override
     public String toString() {
-        return "[topLeft=(" + xMin + ", " + yMin + "), width=" + width + ", height=" + height + "]";
+        return "[leftTop=(" + left + ", " + top + "), width=" + width + ", height=" + height + "]";
     }
 }

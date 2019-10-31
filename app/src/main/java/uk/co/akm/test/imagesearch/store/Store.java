@@ -5,7 +5,6 @@ import android.content.SharedPreferences;
 import android.support.constraint.solver.widgets.Rectangle;
 
 import uk.co.akm.test.imagesearch.process.model.window.Window;
-import uk.co.akm.test.imagesearch.view.combined.window.InternalWindow;
 
 public class Store {
     private static final String SHARED_PREFERENCES_FILE_KEY = "uk.co.akm.test.imagesearch.shared_preferences_storage_file";
@@ -53,12 +52,12 @@ public class Store {
         return new Window(rectangle);
     }
 
-    public static void putWindow(Context context, InternalWindow window) {
-        final float[] numbers = new float[WINDOW_DATA_COMPONENTS_NUMBER];
-        numbers[WINDOW_LEFT_INDEX] = window.getWindowLeft();
-        numbers[WINDOW_TOP_INDEX] = window.getWindowTop();
-        numbers[WINDOW_WIDTH_INDEX] = window.getWindowWidth();
-        numbers[WINDOW_HEIGHT_INDEX] = window.getWindowHeight();
+    public static void putWindow(Context context, Window window) {
+        final int[] numbers = new int[WINDOW_DATA_COMPONENTS_NUMBER];
+        numbers[WINDOW_LEFT_INDEX] = window.left;
+        numbers[WINDOW_TOP_INDEX] = window.top;
+        numbers[WINDOW_WIDTH_INDEX] = window.width;
+        numbers[WINDOW_HEIGHT_INDEX] = window.height;
 
         put(context, IMAGE_SELECTION_WINDOW_KEY, serialize(numbers));
     }
@@ -67,10 +66,10 @@ public class Store {
         remove(context, IMAGE_SELECTION_WINDOW_KEY);
     }
 
-    private static String serialize(float[] numbers) {
+    private static String serialize(int[] numbers) {
         final StringBuilder sb = new StringBuilder();
         for (int i=0; i<numbers.length ; i++) {
-            sb.append(Math.round(numbers[i]));
+            sb.append(numbers[i]);
             if (i < numbers.length - 1) {
                 sb.append(NUMBER_SEPARATOR);
             }

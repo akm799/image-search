@@ -10,6 +10,7 @@ import android.graphics.Paint;
 import android.graphics.Rect;
 import android.os.Parcelable;
 import android.support.annotation.Nullable;
+import android.support.constraint.solver.widgets.Rectangle;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
@@ -17,6 +18,7 @@ import android.view.View;
 import uk.co.akm.test.imagesearch.R;
 import uk.co.akm.test.imagesearch.photo.PhotoIO;
 import uk.co.akm.test.imagesearch.photo.impl.PhotoIOImpl;
+import uk.co.akm.test.imagesearch.process.model.window.Window;
 import uk.co.akm.test.imagesearch.view.combined.window.InternalWindow;
 
 public class PhotoWindowView extends View {
@@ -252,6 +254,14 @@ public class PhotoWindowView extends View {
         return (window != null);
     }
 
+    public final Window getInternalWindowInBitmapScale() {
+        if (window == null) {
+            return null;
+        }
+
+        return buildWindowInBitmapScale(photo, window);
+    }
+
     public final Bitmap getInternalWindowBitmap() {
         if (window == null) {
             return null;
@@ -261,6 +271,12 @@ public class PhotoWindowView extends View {
     }
 
     private Bitmap createInternalWindowBitmap(Bitmap bitmap, InternalWindow window) {
+        final Window bitmapScaleWindow = buildWindowInBitmapScale(bitmap, window);
+
+        return Bitmap.createBitmap(bitmap, bitmapScaleWindow.xMin, bitmapScaleWindow.yMin, bitmapScaleWindow.width, bitmapScaleWindow.height);
+    }
+
+    private Window buildWindowInBitmapScale(Bitmap bitmap, InternalWindow window) {
         final float leftFraction = (window.getWindowLeft() - photoRectangle.left)/photoRectangle.width();
         final float topFraction = (window.getWindowTop() - photoRectangle.top)/photoRectangle.height();
         final float widthFraction = window.getWindowWidth()/photoRectangle.width();
@@ -271,6 +287,9 @@ public class PhotoWindowView extends View {
         final int width = (int)(widthFraction*bitmap.getWidth());
         final int height = (int)(heightFraction*bitmap.getHeight());
 
-        return Bitmap.createBitmap(bitmap, x, y, width, height);
+        final Rectangle rectangle = new Rectangle();
+        rectangle.setBounds(x, y, width, height);
+
+        return new Window(rectangle);
     }
 }
