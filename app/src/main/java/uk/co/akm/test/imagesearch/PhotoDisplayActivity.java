@@ -12,6 +12,7 @@ import android.util.Log;
 
 import uk.co.akm.test.imagesearch.async.io.BitmapSaveAndDisplayTask;
 import uk.co.akm.test.imagesearch.async.io.ImageDisplayWithAfterAction;
+import uk.co.akm.test.imagesearch.store.Store;
 import uk.co.akm.test.imagesearch.view.combined.PhotoWindowView;
 
 public class PhotoDisplayActivity extends AppCompatActivity implements ImageDisplayWithAfterAction<String> {
@@ -87,7 +88,7 @@ public class PhotoDisplayActivity extends AppCompatActivity implements ImageDisp
 
     private void onSaveImageSelection() {
         try {
-            if (!saveAndDisplaySelectedImageSection()) {
+            if (!saveSelectedImageWindow() | !saveAndDisplaySelectedImageSection()) {
                 clearAndPressBack();
             }
             // We have an image selection and we have launched an asynchronous task to save and display it. The back-button is going to be 'pressed' when the task finishes.
@@ -97,6 +98,16 @@ public class PhotoDisplayActivity extends AppCompatActivity implements ImageDisp
         }
     }
 
+    private boolean saveSelectedImageWindow() {
+        if (photoView.hasInternalWindowBitmap()) {
+            Store.putWindow(this, photoView.getInternalWindowInBitmapScale());
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    @Deprecated
     private boolean saveAndDisplaySelectedImageSection() {
         final Bitmap smallImageBitmap = photoView.getInternalWindowBitmap();
         if (smallImageBitmap != null) {

@@ -6,6 +6,8 @@ import android.util.Log;
 
 import uk.co.akm.test.imagesearch.photo.PhotoIO;
 import uk.co.akm.test.imagesearch.photo.impl.PhotoIOImpl;
+import uk.co.akm.test.imagesearch.process.model.window.Window;
+import uk.co.akm.test.imagesearch.store.Store;
 
 public final class BitmapReadAndDisplayTask extends AsyncTask<String, Void, Bitmap> {
     private static final String TAG = BitmapReadAndDisplayTask.class.getName();
@@ -20,8 +22,22 @@ public final class BitmapReadAndDisplayTask extends AsyncTask<String, Void, Bitm
 
     @Override
     protected Bitmap doInBackground(String... params) {
+        final Window selection = Store.getWindow(parent.getContext());
+        if (selection == null) {
+            Log.e(TAG, "Error: no selected image section window found.");
+            return null;
+        } else {
+            Store.removeWindow(parent.getContext()); //TODO Use the selected window to cut out the image section to show.
+        }
+
+        final Bitmap bitmap = readBitmap(params[0]);
+
+        return bitmap;
+    }
+
+    private Bitmap readBitmap(String photoName) {
         try {
-            return photoIO.readCapturedImage(parent.getContext(), params[0]);
+            return photoIO.readCapturedImage(parent.getContext(), photoName);
         } catch (Exception e) {
             Log.e(TAG, "Error when trying to read the saved image section.", e);
             return null;
