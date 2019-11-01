@@ -14,7 +14,7 @@ import uk.co.akm.test.imagesearch.process.model.window.Window;
  * Returns an output image with one or more rectangular windows
  * superimposed on the input image.
  *
- * Created by Thanos Mavroidis on 06/07/2019.
+ * Created by Thanos Mavroidis on 01/11/2019.
  */
 public final class WindowImageProcessor implements ImageProcessor {
     private final Collection<ColouredWindow> windows = new ArrayList<>();
@@ -41,53 +41,35 @@ public final class WindowImageProcessor implements ImageProcessor {
     @Override
     public Bitmap processImage(Bitmap image) {
         checkAllWindowsAreWithinTheImage(image);
-        return drawWBufferedImageWithWindows(image, windows);
+        return drawBitmapWithWindows(image, windows);
     }
 
-    private Bitmap drawWBufferedImageWithWindows(Bitmap input, Collection<ColouredWindow> windows) {
-        final int width = input.getWidth();
-        final int height = input.getHeight();
-        final Bitmap output = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
-        for (int j=0 ; j<height ; j++) {
-            for (int i=0 ; i<width ; i++) {
-                final int rgb = getOutputPixelColour(input, windows, i, j);
-                output.setPixel(i, j, rgb);
-            }
-        }
+    private Bitmap drawBitmapWithWindows(Bitmap input, Collection<ColouredWindow> windows) {
+        final Bitmap output = Bitmap.createBitmap(input);
+        drawWindows(output, windows);
 
         return output;
     }
 
-    private int getOutputPixelColour(Bitmap input, Collection<ColouredWindow> windows, int x, int y) {
-        final ColouredWindow borderPixelWindow = isWindowBorderPixel(windows, x, y);
-        if (borderPixelWindow == null) {
-            return input.getPixel(x, y);
-        } else {
-            return borderPixelWindow.rgb;
-        }
-    }
-
-    private ColouredWindow isWindowBorderPixel(Collection<ColouredWindow> windows, int x, int y) {
+    private void drawWindows(Bitmap bitmap, Collection<ColouredWindow> windows) {
         for (ColouredWindow window : windows) {
-            if (isWindowBorderPixel(window, x, y)) {
-                return window;
-            }
+            drawWindow(bitmap, window);
         }
-
-        return null;
     }
 
-    private boolean isWindowBorderPixel(Window window, int x, int y) {
-        if (x == window.xMin && (window.yMin <= y && y <= window.yMax)) {
-            return true;
-        } else if (x == window.xMax && (window.yMin <= y && y <= window.yMax)) {
-            return true;
-        } else if (y == window.yMin && (window.xMin <= x && x <= window.xMax)) {
-            return true;
-        } else if (y == window.yMax && (window.xMin <= x && x <= window.xMax)) {
-            return true;
-        } else {
-            return false;
+    private void drawWindow(Bitmap bitmap, ColouredWindow window) {
+        final int rgb = window.rgb;
+
+        // Horizontal window lines
+        for (int i=window.xMin ; i<=window.xMax ; i++) {
+            bitmap.setPixel(i, window.yMin, rgb);
+            bitmap.setPixel(i, window.yMax, rgb);
+        }
+
+        // Vertical window lines
+        for (int j=window.yMin ; j<=window.yMax ; j++) {
+            bitmap.setPixel(window.xMin, j, rgb);
+            bitmap.setPixel(window.xMax, j, rgb);
         }
     }
 
