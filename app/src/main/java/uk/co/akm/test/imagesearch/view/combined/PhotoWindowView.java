@@ -5,7 +5,6 @@ import android.content.res.TypedArray;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
-import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.Rect;
 import android.os.Parcelable;
@@ -16,6 +15,7 @@ import android.view.MotionEvent;
 import android.view.View;
 
 import uk.co.akm.test.imagesearch.R;
+import uk.co.akm.test.imagesearch.photo.BitmapFunctions;
 import uk.co.akm.test.imagesearch.photo.PhotoIO;
 import uk.co.akm.test.imagesearch.photo.impl.PhotoIOImpl;
 import uk.co.akm.test.imagesearch.process.model.window.Window;
@@ -103,18 +103,10 @@ public class PhotoWindowView extends View {
     public void setPhoto(String photoName) {
         final Bitmap photo = photoIO.readCapturedImage(getContext(), photoName);
         if (photo != null) {
-            this.photo = rotateBitmap(photo);
+            this.photo = BitmapFunctions.quarterRotateClockwise(photo, true);
             this.photoName = photoName; // Cannot display the photo yet because at this point our view dimensions may be zero.
-            photo.recycle();
             invalidate();
         }
-    }
-
-    private Bitmap rotateBitmap(Bitmap bitmap) {
-        final Matrix rotation = new Matrix();
-        rotation.postRotate(90);
-
-        return Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), rotation, true);
     }
 
     @Nullable
