@@ -8,7 +8,7 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.widget.ImageView;
 
-import uk.co.akm.test.imagesearch.async.io.BitmapReadAndDisplayTask;
+import uk.co.akm.test.imagesearch.async.io.BitmapReadProcessAndDisplayTask;
 import uk.co.akm.test.imagesearch.async.io.ImageDisplay;
 import uk.co.akm.test.imagesearch.photo.PhotoIO;
 import uk.co.akm.test.imagesearch.photo.impl.PhotoIOImpl;
@@ -46,7 +46,7 @@ public final class DebugPhotoDisplayActivity extends AppCompatActivity implement
 
         final String photoName = getIntent().getStringExtra(PHOTO_NAME_ARG_KEY);
         if (photoName != null) {
-            new BitmapReadAndDisplayTask(this).execute(photoName);
+            new BitmapReadProcessAndDisplayTask(this).execute(photoName);
         }
     }
 

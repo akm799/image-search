@@ -4,6 +4,7 @@ package uk.co.akm.test.imagesearch.process.track.search.impl;
 import android.graphics.Bitmap;
 import android.graphics.Point;
 import android.support.constraint.solver.widgets.Rectangle;
+import android.util.Log;
 
 import java.util.Iterator;
 
@@ -34,8 +35,11 @@ public final class BasicBestMatchFinder implements BestMatchFinder {
     @Override
     public Window findBestMatch(Bitmap targetImage, Window targetWindow, Bitmap image) {
         this.targetColourDistribution = buildColourHistogramForWindow(targetImage, targetWindow);
+Log.d("BasicBestMatchFinder", ">>>>>>>>>>>>>>> Built colour histogram for input window.");
         this.trackingWindow = findMostSimilarWindow(targetWindow, image);
+Log.d("BasicBestMatchFinder", ">>>>>>>>>>>>>>> Found most similar window.");
         shiftTowardsTheTargetWindow(image);
+Log.d("BasicBestMatchFinder", ">>>>>>>>>>>>>>> Shifted similar window.");
 
         return bestMatchWindow;
     }

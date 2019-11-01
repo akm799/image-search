@@ -5,12 +5,9 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 
-import uk.co.akm.test.imagesearch.async.io.BitmapSaveAndDisplayTask;
 import uk.co.akm.test.imagesearch.async.io.ImageDisplayWithAfterAction;
 import uk.co.akm.test.imagesearch.store.Store;
 import uk.co.akm.test.imagesearch.view.combined.PhotoWindowView;
@@ -44,7 +41,7 @@ public class PhotoDisplayActivity extends AppCompatActivity implements ImageDisp
 
     @Override
     public void afterDisplay() {
-        clearAndPressBack();
+        super.onBackPressed();
     }
 
     @Override
@@ -62,7 +59,7 @@ public class PhotoDisplayActivity extends AppCompatActivity implements ImageDisp
         if (photoView.hasInternalWindowBitmap()) {
             showSaveSelectionDialog();
         } else {
-            clearAndPressBack();
+            super.onBackPressed();
         }
     }
 
@@ -81,21 +78,18 @@ public class PhotoDisplayActivity extends AppCompatActivity implements ImageDisp
                     @Override
                     public void onClick(DialogInterface dialogInterface, int which) {
                         dismissSaveDialog();
-                        clearAndPressBack();
+                        PhotoDisplayActivity.super.onBackPressed();
                     }
                 }).show();
     }
 
     private void onSaveImageSelection() {
-        try {
-            if (!saveSelectedImageWindow() | !saveAndDisplaySelectedImageSection()) {
-                clearAndPressBack();
-            }
-            // We have an image selection and we have launched an asynchronous task to save and display it. The back-button is going to be 'pressed' when the task finishes.
-        } catch (Exception e) {
-            Log.e(TAG, "Error when overriding the back button press.", e);
-            clearAndPressBack();
+        if (saveSelectedImageWindow()) {
+            final String photoName = getIntent().getStringExtra(PHOTO_NAME_ARG_KEY);
+            DebugPhotoDisplayActivity.start(this, photoName);
         }
+
+        super.onBackPressed();
     }
 
     private boolean saveSelectedImageWindow() {
@@ -104,30 +98,6 @@ public class PhotoDisplayActivity extends AppCompatActivity implements ImageDisp
             return true;
         } else {
             return false;
-        }
-    }
-
-    @Deprecated
-    private boolean saveAndDisplaySelectedImageSection() {
-        final Bitmap smallImageBitmap = photoView.getInternalWindowBitmap();
-        if (smallImageBitmap != null) {
-            new BitmapSaveAndDisplayTask(this).saveAndDisplay(smallImageBitmap, "selected_section");
-            return true;
-        } else {
-            return false;
-        }
-    }
-
-    private void clearAndPressBack() {
-        clear();
-        super.onBackPressed();
-    }
-
-    private void clear() {
-        try {
-            photoView.clear();
-        } catch (Exception e) {
-            Log.e(TAG, "Error when clearing the photo (selection) view.", e);
         }
     }
 
