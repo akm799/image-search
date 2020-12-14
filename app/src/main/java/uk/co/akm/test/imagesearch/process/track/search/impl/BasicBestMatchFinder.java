@@ -2,123 +2,92 @@ package uk.co.akm.test.imagesearch.process.track.search.impl;
 
 
 import android.graphics.Bitmap;
-import android.graphics.Point;
-import android.support.constraint.solver.widgets.Rectangle;
-import android.util.Log;
 
-import java.util.Iterator;
+import java.util.Arrays;
 
 import uk.co.akm.test.imagesearch.process.model.window.Window;
 import uk.co.akm.test.imagesearch.process.track.search.BestMatchFinder;
-import uk.co.akm.test.imagesearch.process.track.search.WindowsIterator;
-import uk.co.akm.test.imagesearch.process.track.shift.ColourCubeDifference;
-import uk.co.akm.test.imagesearch.process.track.shift.ColourCubeHistogram;
-import uk.co.akm.test.imagesearch.process.track.shift.ColourMeanShift;
-import uk.co.akm.test.imagesearch.process.track.shift.ColourSimilarity;
-import uk.co.akm.test.imagesearch.process.track.shift.MutableColourCubeHistogram;
-import uk.co.akm.test.imagesearch.process.track.shift.impl.ColourCubeDifferenceImpl;
-import uk.co.akm.test.imagesearch.process.track.shift.impl.MutableColourCubeHistogramImpl;
+import uk.co.akm.test.imagesearch.process.util.ColourHelper;
 
 /**
  * Created by Thanos Mavroidis on 29/07/2019.
  */
 public final class BasicBestMatchFinder implements BestMatchFinder {
-    private final int nDivsInSide = 51;
+    private static final int MAX_COLOUR_VALUE_INT = 255;
+    private static final float MAX_COLOUR_VALUE = (float)MAX_COLOUR_VALUE_INT;
 
-    private final int maxIterations = 10;
-    private final double convergenceDistance = 1.5;
-
-    private Window trackingWindow;
-    private Window bestMatchWindow;
-    private ColourCubeHistogram targetColourDistribution;
+    private final int nSideDivs = 51;
+    private final int nSideDivsSq = nSideDivs * nSideDivs;
+    private final float binWidth = MAX_COLOUR_VALUE/nSideDivs;;
+    private final int[] colourHistogram = new int[nSideDivs*nSideDivsSq];
 
     @Override
     public Window findBestMatch(Bitmap targetImage, Window targetWindow, Bitmap image) {
-        this.targetColourDistribution = buildColourHistogramForWindow(targetImage, targetWindow);
-Log.d("BasicBestMatchFinder", ">>>>>>>>>>>>>>> Built colour histogram for input window.");
-        this.trackingWindow = findMostSimilarWindow(targetWindow, image);
-Log.d("BasicBestMatchFinder", ">>>>>>>>>>>>>>> Found most similar window.");
-        shiftTowardsTheTargetWindow(image);
-Log.d("BasicBestMatchFinder", ">>>>>>>>>>>>>>> Shifted similar window.");
+        fillColourHistogramForWindow(targetImage, targetWindow);
 
-        return bestMatchWindow;
+        return findBestMatchWindow(targetImage, targetWindow);
     }
 
-    private ColourCubeHistogram buildColourHistogramForWindow(Bitmap image, Window window) {
-        final MutableColourCubeHistogram histogram = new MutableColourCubeHistogramImpl(window.width, window.height, nDivsInSide);
+    private void fillColourHistogramForWindow(Bitmap image, Window window) {
+        fillColourHistogramForWindow(image, window, colourHistogram);
+    }
+
+    private void fillColourHistogramForWindow(Bitmap image, Window window, int[] colourHistogram) {
+        Arrays.fill(colourHistogram, 0);
+
         for (int j=window.yMin ; j<=window.yMax ; j++) {
             for (int i=window.xMin ; i<=window.xMax ; i++) {
-                final int pixelIndex = (j - window.yMin)*window.width + (i - window.xMin);
                 final int rgb = image.getPixel(i, j);
-                histogram.add(pixelIndex, rgb);
+                final int binIndex = findBinIndexForColour(rgb);
+                colourHistogram[binIndex]++;
             }
         }
-
-        return histogram;
     }
 
-    private Window findMostSimilarWindow(Window targetWindow, Bitmap image) {
-        float highestSimilarity = -1;
-        Window mostSimilarWindow = null;
+    private int findBinIndexForColour(int rgb) {
+        final int rIndex = findSideBinIndex(ColourHelper.getRed(rgb));
+        final int gIndex = findSideBinIndex(ColourHelper.getGreen(rgb));
+        final int bIndex = findSideBinIndex(ColourHelper.getBlue(rgb));
 
-        final Iterator<Window> iterator = new WindowsIterator(image, targetWindow);
-        while (iterator.hasNext()) {
-            final Window testWindow = iterator.next();
-            final ColourCubeHistogram testHistogram = buildColourHistogramForWindow(image, testWindow);
-            final float similarity = ColourSimilarity.findSimilarity(targetColourDistribution, testHistogram);
-            if (similarity > highestSimilarity) {
-                highestSimilarity = similarity;
-                mostSimilarWindow = testWindow;
-            }
+        return bIndex*nSideDivsSq + gIndex*nSideDivs + rIndex;
+    }
+
+    private int findSideBinIndex(int rgbComponent) {
+        if (rgbComponent == MAX_COLOUR_VALUE_INT) { // Include the 255 value in the last bin.
+            return nSideDivs - 1;
+        } else {
+            return (int) (rgbComponent/binWidth);
         }
-
-        return mostSimilarWindow;
     }
 
-    private void shiftTowardsTheTargetWindow(Bitmap image) {
-        Point shift = null;
-        float highestSimilarity = -1;
-
-        int i = 0;
-        while (haveNotConverged(shift) && i < maxIterations) {
-            shift = calculateNewBestCentre(image);
-            if (shift != null) {
-                trackingWindow = new Window(shiftWindow(shift, trackingWindow));
-                final ColourCubeHistogram trackingColourDistribution = buildColourHistogramForWindow(image, trackingWindow);
-                final float similarity = ColourSimilarity.findSimilarity(targetColourDistribution, trackingColourDistribution);
-                if (similarity > highestSimilarity) {
-                    highestSimilarity = similarity;
-                    bestMatchWindow = trackingWindow;
+    private Window findBestMatchWindow(Bitmap targetImage, Window targetWindow) {
+        int xMin = 0;
+        int yMin = 0;
+        int minDiff = Integer.MAX_VALUE;
+        for (int j=0 ; j<targetImage.getHeight() - targetWindow.height ; j++) {
+            for (int i=0 ; i<targetImage.getWidth() - targetWindow.width ; i++) {
+                final Window testWindow = new Window(i, j, targetWindow.width, targetWindow.height);
+                final int diff = diffColourHistogramForWindow(targetImage, testWindow);
+                if (diff < minDiff) {
+                    minDiff = diff;
+                    xMin = i;
+                    yMin = j;
                 }
             }
-
-            i++;
         }
 
-        if (i == maxIterations) {
-            System.out.println("Could not converge after " + i + " iterations.");
+        return new Window(xMin, yMin, targetWindow.width, targetWindow.height);
+    }
+
+    private int diffColourHistogramForWindow(Bitmap image, Window window) {
+        final int[] windowColourHistogram = new int[nSideDivs*nSideDivsSq];
+        fillColourHistogramForWindow(image, window, windowColourHistogram);
+
+        int diff = 0;
+        for (int i=0 ; i<colourHistogram.length ; i++) {
+            diff += Math.abs(windowColourHistogram[i] - colourHistogram[i]);
         }
-    }
 
-    private boolean haveNotConverged(Point shift) {
-        if (shift == null) {
-            return true;
-        }
-
-        return (Math.sqrt(shift.x*shift.x + shift.y*shift.y) > convergenceDistance);
-    }
-
-    private Point calculateNewBestCentre(Bitmap image) {
-        final ColourCubeHistogram trackingColourDistribution = buildColourHistogramForWindow(image, trackingWindow);
-        final ColourCubeDifference comparison = new ColourCubeDifferenceImpl(targetColourDistribution, trackingColourDistribution);
-
-        return ColourMeanShift.shift(trackingColourDistribution, comparison);
-    }
-
-    private Rectangle shiftWindow(Point shift, Window window) {
-        final Rectangle shiftedWindow = new Rectangle();
-        shiftedWindow.setBounds(window.xMin + shift.x, window.yMin + shift.y, window.width, window.height);
-
-        return shiftedWindow;
+        return diff;
     }
 }

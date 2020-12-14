@@ -19,6 +19,18 @@ public class Window {
     public final int left;
     public final int top;
 
+    public Window(int xMin, int yMin, int width, int height) {
+        this.width = width;
+        this.height = height;
+        this.xMin = xMin;
+        this.xMax = xMin + width - 1;
+        this.yMin = yMin;
+        this.yMax = yMin + height - 1;
+
+        this.left = xMin;
+        this.top = yMin;
+    }
+
     public Window(Window window) {
         this.width = window.width;
         this.height = window.height;
