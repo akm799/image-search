@@ -50,6 +50,9 @@ public class PhotoDisplayActivity extends AppCompatActivity implements ImageDisp
     }
 
     @Override
+    public void onProcessingStarted() {}
+
+    @Override
     public void display(String photoName) {
         DebugPhotoDisplayActivity.start(this, photoName);
     }

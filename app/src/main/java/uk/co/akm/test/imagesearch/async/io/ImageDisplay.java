@@ -6,5 +6,7 @@ public interface ImageDisplay<I> {
 
     Context getContext();
 
+    void onProcessingStarted();
+
     void display(I image);
 }

@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.view.View;
 import android.widget.ImageView;
 
 import uk.co.akm.test.imagesearch.async.io.BitmapReadProcessAndDisplayTask;
@@ -56,7 +57,13 @@ public final class DebugPhotoDisplayActivity extends AppCompatActivity implement
     }
 
     @Override
+    public void onProcessingStarted() {
+        findViewById(R.id.debugProcessingProgress).setVisibility(View.VISIBLE);
+    }
+
+    @Override
     public void display(Bitmap image) {
+        findViewById(R.id.debugProcessingProgress).setVisibility(View.GONE);
         if (imageView != null) {
             imageView.setImageBitmap(image);
         }

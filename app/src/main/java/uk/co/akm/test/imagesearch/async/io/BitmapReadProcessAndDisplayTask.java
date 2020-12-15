@@ -25,6 +25,11 @@ public final class BitmapReadProcessAndDisplayTask extends AsyncTask<String, Voi
     }
 
     @Override
+    protected void onPreExecute() {
+        parent.onProcessingStarted();
+    }
+
+    @Override
     protected Bitmap doInBackground(String... params) {
         final Window selection = Store.getWindow(parent.getContext());
         if (selection == null) {
