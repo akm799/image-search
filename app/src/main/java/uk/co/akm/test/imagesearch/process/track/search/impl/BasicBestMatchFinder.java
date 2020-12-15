@@ -2,6 +2,7 @@ package uk.co.akm.test.imagesearch.process.track.search.impl;
 
 
 import android.graphics.Bitmap;
+import android.util.Log;
 
 import java.util.Arrays;
 
@@ -20,6 +21,7 @@ public final class BasicBestMatchFinder implements BestMatchFinder {
     private final int nSideDivsSq = nSideDivs * nSideDivs;
     private final float binWidth = MAX_COLOUR_VALUE/nSideDivs;;
     private final int[] colourHistogram = new int[nSideDivs*nSideDivsSq];
+    private final int[] testColourHistogram = new int[nSideDivs*nSideDivsSq];
 
     @Override
     public Window findBestMatch(Bitmap targetImage, Window targetWindow, Bitmap image) {
@@ -64,8 +66,11 @@ public final class BasicBestMatchFinder implements BestMatchFinder {
         int xMin = 0;
         int yMin = 0;
         int minDiff = Integer.MAX_VALUE;
-        for (int j=0 ; j<targetImage.getHeight() - targetWindow.height ; j++) {
-            for (int i=0 ; i<targetImage.getWidth() - targetWindow.width ; i++) {
+Log.d("TEMP", ">>>>>>>>>>>>>>> Searching for best match [" + targetImage.getWidth() + ", " + targetImage.getHeight() + "]...");
+        for (int j=0 ; j<targetImage.getHeight() - targetWindow.height ; j += targetWindow.height) {
+Log.d("TEMP", ">>>>>>>>>> row index: " + j);
+            for (int i=0 ; i<targetImage.getWidth() - targetWindow.width ; i += targetWindow.width) {
+Log.d("TEMP", ">>>>>>> column index: " + i);
                 final Window testWindow = new Window(i, j, targetWindow.width, targetWindow.height);
                 final int diff = diffColourHistogramForWindow(targetImage, testWindow);
                 if (diff < minDiff) {
@@ -75,17 +80,17 @@ public final class BasicBestMatchFinder implements BestMatchFinder {
                 }
             }
         }
+Log.d("TEMP", ">>>>>>>>>>>>>>>>>>> Best match: (" + xMin + ", " + yMin + ")");
 
         return new Window(xMin, yMin, targetWindow.width, targetWindow.height);
     }
 
     private int diffColourHistogramForWindow(Bitmap image, Window window) {
-        final int[] windowColourHistogram = new int[nSideDivs*nSideDivsSq];
-        fillColourHistogramForWindow(image, window, windowColourHistogram);
+        fillColourHistogramForWindow(image, window, testColourHistogram);
 
         int diff = 0;
         for (int i=0 ; i<colourHistogram.length ; i++) {
-            diff += Math.abs(windowColourHistogram[i] - colourHistogram[i]);
+            diff += Math.abs(testColourHistogram[i] - colourHistogram[i]);
         }
 
         return diff;
