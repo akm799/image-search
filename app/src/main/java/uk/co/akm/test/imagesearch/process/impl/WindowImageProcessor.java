@@ -62,14 +62,28 @@ public final class WindowImageProcessor implements ImageProcessor {
 
         // Horizontal window lines
         for (int i=window.xMin ; i<=window.xMax ; i++) {
+            // Top line: 3-pixels thick.
+            bitmap.setPixel(i, window.yMin - 1, rgb);
             bitmap.setPixel(i, window.yMin, rgb);
+            bitmap.setPixel(i, window.yMin + 1, rgb);
+
+            // Bottom line: 3-pixels thick.
+            bitmap.setPixel(i, window.yMax - 1, rgb);
             bitmap.setPixel(i, window.yMax, rgb);
+            bitmap.setPixel(i, window.yMax + 1, rgb);
         }
 
         // Vertical window lines
         for (int j=window.yMin ; j<=window.yMax ; j++) {
+            // Left line: 3-pixels thick.
+            bitmap.setPixel(window.xMin - 1, j, rgb);
             bitmap.setPixel(window.xMin, j, rgb);
+            bitmap.setPixel(window.xMin + 1, j, rgb);
+
+            // Right line: 3-pixels thick.
+            bitmap.setPixel(window.xMax - 1, j, rgb);
             bitmap.setPixel(window.xMax, j, rgb);
+            bitmap.setPixel(window.xMax + 1, j, rgb);
         }
     }
 

@@ -56,12 +56,10 @@ public final class BitmapReadProcessAndDisplayTask extends AsyncTask<String, Voi
     private Bitmap processBitmap(Bitmap input, Window selection) {
         final Bitmap rotated = BitmapFunctions.quarterRotateClockwise(input, true);
 
-        final int rgb = ColourHelper.getRgb(0, 0, 255);
+        final int rgb = ColourHelper.getRgb(0, 255, 0);
         final ImageProcessor windowImageProcessor = new SearchImageProcessor(selection, rgb);
-Log.d(TAG, ">>>>>>>>>>>>> Processing image ...");
         final Bitmap processed = windowImageProcessor.processImage(rotated);
         rotated.recycle();
-Log.d(TAG, ">>>>>>>>>>>>> Finished processing image.");
 
         return processed;
     }
