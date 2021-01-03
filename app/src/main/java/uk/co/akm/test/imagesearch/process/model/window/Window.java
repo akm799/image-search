@@ -56,13 +56,7 @@ public class Window {
     }
 
     public Window shift(int dx, int dy) {
-        final Rectangle shifted = new Rectangle();
-        shifted.x = xMin + dx;
-        shifted.y = yMin + dy;
-        shifted.width = width;
-        shifted.height = height;
-
-        return new Window(shifted);
+        return new Window(xMin + dx, yMin + dy, width, height);
     }
 
     @Override
