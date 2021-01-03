@@ -6,6 +6,7 @@ import uk.co.akm.test.imagesearch.process.ImageProcessor;
 import uk.co.akm.test.imagesearch.process.model.window.ColouredWindow;
 import uk.co.akm.test.imagesearch.process.model.window.Window;
 import uk.co.akm.test.imagesearch.process.track.search.impl.BasicBestMatchFinder;
+import uk.co.akm.test.imagesearch.process.track.search.impl.MeanShiftBestMatchFinder;
 
 public final class SearchImageProcessor implements ImageProcessor {
     private final int bestMatchColour;
@@ -23,7 +24,8 @@ public final class SearchImageProcessor implements ImageProcessor {
 
     @Override
     public Bitmap processImage(Bitmap image) {
-        final Window bestMatchWindow = (new BasicBestMatchFinder()).findBestMatch(image, targetWindow, image);
+        final Window initialMatchWindow = (new BasicBestMatchFinder()).findBestMatch(image, targetWindow, image);
+        final Window bestMatchWindow = (new MeanShiftBestMatchFinder(initialMatchWindow)).findBestMatch(image, targetWindow, image);
         final ImageProcessor windowImageProcessor = new WindowImageProcessor(new ColouredWindow(bestMatchWindow, bestMatchColour));
 
         return windowImageProcessor.processImage(image);
