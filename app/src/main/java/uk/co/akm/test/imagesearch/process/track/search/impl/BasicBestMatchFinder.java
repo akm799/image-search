@@ -10,7 +10,12 @@ import uk.co.akm.test.imagesearch.process.track.search.BestMatchFinder;
 import uk.co.akm.test.imagesearch.process.util.ColourHelper;
 
 /**
- * Created by Thanos Mavroidis on 29/07/2019.
+ * Brute force best match finder based on colour tracking. This finder will create multiple windows
+ * on the test image (equal to the target window size) and then compare their colour histogram
+ * difference with the target window. The best match will be the window with the minimum colour
+ * histogram difference.
+ *
+ * Created by Thanos Mavroidis on 14/12/2020.
  */
 public final class BasicBestMatchFinder implements BestMatchFinder {
     private static final int MAX_COLOUR_VALUE_INT = 255;
