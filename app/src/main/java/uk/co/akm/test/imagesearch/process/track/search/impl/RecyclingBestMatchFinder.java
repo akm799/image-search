@@ -21,6 +21,7 @@ import uk.co.akm.test.imagesearch.process.track.shift.impl.MutableColourCubeHist
 /**
  * Created by Thanos Mavroidis on 29/07/2019.
  */
+@Deprecated
 public final class RecyclingBestMatchFinder implements BestMatchFinder {
     private final int nDivsInSide = 51;
 

@@ -2,7 +2,6 @@ package uk.co.akm.test.imagesearch.process.track.search.impl;
 
 
 import android.graphics.Bitmap;
-import android.util.Log;
 
 import java.util.Arrays;
 
@@ -19,7 +18,7 @@ public final class BasicBestMatchFinder implements BestMatchFinder {
 
     private final int nSideDivs = 51;
     private final int nSideDivsSq = nSideDivs * nSideDivs;
-    private final float binWidth = MAX_COLOUR_VALUE/nSideDivs;;
+    private final float binWidth = MAX_COLOUR_VALUE/nSideDivs;
     private final int[] colourHistogram = new int[nSideDivs*nSideDivsSq];
     private final int[] testColourHistogram = new int[nSideDivs*nSideDivsSq];
 
@@ -66,11 +65,8 @@ public final class BasicBestMatchFinder implements BestMatchFinder {
         int xMin = 0;
         int yMin = 0;
         int minDiff = Integer.MAX_VALUE;
-Log.d("TEMP", ">>>>>>>>>>>>>>> Searching for best match [" + targetImage.getWidth() + ", " + targetImage.getHeight() + "]...");
         for (int j=0 ; j<targetImage.getHeight() - targetWindow.height ; j += targetWindow.height) {
-Log.d("TEMP", ">>>>>>>>>> row index: " + j);
             for (int i=0 ; i<targetImage.getWidth() - targetWindow.width ; i += targetWindow.width) {
-Log.d("TEMP", ">>>>>>> column index: " + i);
                 final Window testWindow = new Window(i, j, targetWindow.width, targetWindow.height);
                 final int diff = diffColourHistogramForWindow(targetImage, testWindow);
                 if (diff < minDiff) {
@@ -80,7 +76,6 @@ Log.d("TEMP", ">>>>>>> column index: " + i);
                 }
             }
         }
-Log.d("TEMP", ">>>>>>>>>>>>>>>>>>> Best match: (" + xMin + ", " + yMin + ")");
 
         return new Window(xMin, yMin, targetWindow.width, targetWindow.height);
     }
