@@ -58,6 +58,11 @@ public final class SmallShiftBestMatchFinder implements BestMatchFinder {
         }
     }
 
+    private Window findBestMatchWindow(Bitmap targetImage, Window targetWindow) {
+        //TODO
+        return null;
+    }
+
     private void fillColourHistogramForShiftedWindow(Bitmap image, Window window, int[] colourHistogram, int shiftDirection) {
         switch (shiftDirection) {
             case SHIFT_LEFT:
@@ -227,23 +232,13 @@ public final class SmallShiftBestMatchFinder implements BestMatchFinder {
     }
 
     private void addToColourHistogram(Bitmap image, int x, int y, int[] colourHistogram) {
-        final int rgb = image.getPixel(x, y);
-        final int binIndex = findBinIndexForColour(rgb);
+        final int binIndex = getColourHistogramIndexForPixel(image, x, y);
         colourHistogram[binIndex]++;
     }
 
     private void removeFromColourHistogram(Bitmap image, int x, int y, int[] colourHistogram) {
-        final int rgb = image.getPixel(x, y);
-        final int binIndex = findBinIndexForColour(rgb);
+        final int binIndex = getColourHistogramIndexForPixel(image, x, y);
         colourHistogram[binIndex]--;
-    }
-
-    private int findBinIndexForColour(int rgb) {
-        final int rIndex = findSideBinIndex(ColourHelper.getRed(rgb));
-        final int gIndex = findSideBinIndex(ColourHelper.getGreen(rgb));
-        final int bIndex = findSideBinIndex(ColourHelper.getBlue(rgb));
-
-        return bIndex*nSideDivsSq + gIndex*nSideDivs + rIndex;
     }
 
     private int findSideBinIndex(int rgbComponent) {
@@ -254,9 +249,21 @@ public final class SmallShiftBestMatchFinder implements BestMatchFinder {
         }
     }
 
-    private Window findBestMatchWindow(Bitmap targetImage, Window targetWindow) {
-        //TODO
-        return null;
+    private int diffColourHistogramForShiftedWindow(Bitmap image, Window window, int shiftDirection) {
+        final int unShiftedDiff = diffColourHistogramForWindow(image, window);
+
+        switch (shiftDirection) {
+            case SHIFT_LEFT: return diffColourHistogramForLeftShiftedWindow(image, window, unShiftedDiff);
+            case SHIFT_RIGHT: return diffColourHistogramForRightShiftedWindow(image, window, unShiftedDiff);
+            case SHIFT_UP: return diffColourHistogramForUpShiftedWindow(image, window, unShiftedDiff);
+            case SHIFT_DOWN: return diffColourHistogramForDownShiftedWindow(image, window, unShiftedDiff);
+            case SHIFT_LEFT_UP: return diffColourHistogramForLeftUpShiftedWindow(image, window, unShiftedDiff);
+            case SHIFT_LEFT_DOWN: return diffColourHistogramForLeftDownShiftedWindow(image, window, unShiftedDiff);
+            case SHIFT_RIGHT_UP: return diffColourHistogramForRightUpShiftedWindow(image, window, unShiftedDiff);
+            case SHIFT_RIGHT_DOWN: return diffColourHistogramForRightDownShiftedWindow(image, window, unShiftedDiff);
+
+            default: throw new IllegalArgumentException("Illegal shift direction: " + shiftDirection);
+        }
     }
 
     private int diffColourHistogramForWindow(Bitmap image, Window window) {
@@ -272,5 +279,144 @@ public final class SmallShiftBestMatchFinder implements BestMatchFinder {
         }
 
         return diff;
+    }
+
+    private int diffColourHistogramForLeftShiftedWindow(Bitmap image, Window window, int unShiftedDiff) {
+        int diff = unShiftedDiff;
+        final int newXMin = window.xMin - 1;
+        for (int j=window.yMin ; j<=window.yMax ; j++) {
+            diff -= getColourHistogramDifferenceForPixel(image, window.xMax, j);
+            diff += getColourHistogramDifferenceForPixel(image, newXMin, j);
+        }
+
+        return diff;
+    }
+
+    private int diffColourHistogramForRightShiftedWindow(Bitmap image, Window window, int unShiftedDiff) {
+        int diff = unShiftedDiff;
+        final int newXMax = window.xMax + 1;
+        for (int j=window.yMin ; j<=window.yMax ; j++) {
+            diff -= getColourHistogramDifferenceForPixel(image, window.xMin, j);
+            diff += getColourHistogramDifferenceForPixel(image, newXMax, j);
+        }
+
+        return diff;
+    }
+
+    private int diffColourHistogramForUpShiftedWindow(Bitmap image, Window window, int unShiftedDiff) {
+        int diff = unShiftedDiff;
+        final int newYMin = window.yMin - 1;
+        for (int i=window.xMin ; i<=window.xMax ; i++) {
+            diff -= getColourHistogramDifferenceForPixel(image, i, window.yMax);
+            diff += getColourHistogramDifferenceForPixel(image, i, newYMin);
+        }
+
+        return diff;
+    }
+
+    private int diffColourHistogramForDownShiftedWindow(Bitmap image, Window window, int unShiftedDiff) {
+        int diff = unShiftedDiff;
+        final int newYMax = window.yMax + 1;
+        for (int i=window.xMin ; i<=window.xMax ; i++) {
+            diff -= getColourHistogramDifferenceForPixel(image, i, window.yMin);
+            diff += getColourHistogramDifferenceForPixel(image, i, newYMax);
+        }
+
+        return diff;
+    }
+
+    private int diffColourHistogramForLeftUpShiftedWindow(Bitmap image, Window window, int unShiftedDiff) {
+        final int newXMin = window.xMin - 1;
+        final int newXMax = window.xMax - 1;
+        final int newYMin = window.yMin - 1;
+        final int newYMax = window.yMax - 1;
+
+        return diffColourHistogramForDiagonallyShiftedWindow(image, window, newXMin, newYMin, newXMax, newYMax, unShiftedDiff);
+    }
+
+    private int diffColourHistogramForLeftDownShiftedWindow(Bitmap image, Window window, int unShiftedDiff) {
+        final int newXMin = window.xMin - 1;
+        final int newXMax = window.xMax - 1;
+        final int newYMin = window.yMin + 1;
+        final int newYMax = window.yMax + 1;
+
+        return diffColourHistogramForDiagonallyShiftedWindow(image, window, newXMin, newYMin, newXMax, newYMax, unShiftedDiff);
+    }
+
+    private int diffColourHistogramForRightUpShiftedWindow(Bitmap image, Window window, int unShiftedDiff) {
+        final int newXMin = window.xMin + 1;
+        final int newXMax = window.xMax + 1;
+        final int newYMin = window.yMin - 1;
+        final int newYMax = window.yMax - 1;
+
+        return diffColourHistogramForDiagonallyShiftedWindow(image, window, newXMin, newYMin, newXMax, newYMax, unShiftedDiff);
+    }
+
+    private int diffColourHistogramForRightDownShiftedWindow(Bitmap image, Window window, int unShiftedDiff) {
+        final int newXMin = window.xMin + 1;
+        final int newXMax = window.xMax + 1;
+        final int newYMin = window.yMin + 1;
+        final int newYMax = window.yMax + 1;
+
+        return diffColourHistogramForDiagonallyShiftedWindow(image, window, newXMin, newYMin, newXMax, newYMax, unShiftedDiff);
+    }
+
+    private int diffColourHistogramForDiagonallyShiftedWindow(Bitmap image, Window window, int newXMin, int newYMin, int newXMax, int newYMax, int unShiftedDiff) {
+        final int oldDiff = diffOldBorderLinesFromColourHistogram(image, window);
+        final int newDiff = diffNewBorderLinesFromColourHistogram(image, newXMin, newYMin, newXMax, newYMax);
+
+        return unShiftedDiff - oldDiff + newDiff;
+    }
+
+    private int diffNewBorderLinesFromColourHistogram(Bitmap image, int newXMin, int newYMin, int newXMax, int newYMax) {
+        int diff = 0;
+
+        // New vertical border lines
+        for (int j=newYMin ; j<=newYMax ; j++) {
+            diff += getColourHistogramDifferenceForPixel(image, newXMin, j) + getColourHistogramDifferenceForPixel(image, newXMax, j);
+        }
+
+        // New horizontal border lines
+        for (int i=newXMin ; i<=newXMax ; i++) {
+            diff += getColourHistogramDifferenceForPixel(image, i, newYMin) + getColourHistogramDifferenceForPixel(image, i, newYMax);
+        }
+
+        return diff;
+    }
+
+    private int diffOldBorderLinesFromColourHistogram(Bitmap image, Window window) {
+        int diff = 0;
+
+        // Old vertical lines
+        for (int j=window.yMin ; j<=window.yMax ; j++) {
+            diff += getColourHistogramDifferenceForPixel(image, window.xMin, j) + getColourHistogramDifferenceForPixel(image, window.xMax, j);
+        }
+
+        // Old horizontal lines
+        for (int i=window.xMin ; i<=window.xMax ; i++) {
+            diff += getColourHistogramDifferenceForPixel(image, i, window.yMin) + getColourHistogramDifferenceForPixel(image, i, window.yMax);
+        }
+
+        return diff;
+    }
+
+    private int getColourHistogramDifferenceForPixel(Bitmap image, int x, int y) {
+        final int index = getColourHistogramIndexForPixel(image, x, y);
+
+        return Math.abs(testColourHistogram[index] - colourHistogram[index]);
+    }
+
+    private int getColourHistogramIndexForPixel(Bitmap image, int x, int y) {
+        final int rgb = image.getPixel(x, y);
+
+        return findBinIndexForColour(rgb);
+    }
+
+    private int findBinIndexForColour(int rgb) {
+        final int rIndex = findSideBinIndex(ColourHelper.getRed(rgb));
+        final int gIndex = findSideBinIndex(ColourHelper.getGreen(rgb));
+        final int bIndex = findSideBinIndex(ColourHelper.getBlue(rgb));
+
+        return bIndex*nSideDivsSq + gIndex*nSideDivs + rIndex;
     }
 }
