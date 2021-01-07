@@ -44,7 +44,7 @@ public final class SmallShiftBestMatchFinder implements BestMatchFinder {
     public Window findBestMatch(Bitmap targetImage, Window targetWindow, Bitmap image) {
         fillColourHistogramForWindow(targetImage, targetWindow);
 
-        return findBestMatchWindow(targetImage, targetWindow);
+        return findBestMatchWindow(targetImage, trackingWindow);
     }
 
     private void fillColourHistogramForWindow(Bitmap image, Window window) {
