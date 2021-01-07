@@ -21,6 +21,9 @@ public final class SmallShiftBestMatchFinder implements BestMatchFinder {
     private static final int SHIFT_LEFT_DOWN = 6;
     private static final int SHIFT_RIGHT_UP = 7;
     private static final int SHIFT_RIGHT_DOWN = 8;
+    private static final int[] SHIFT_DIRECTIONS = {SHIFT_LEFT, SHIFT_RIGHT, SHIFT_UP, SHIFT_DOWN, SHIFT_LEFT_UP, SHIFT_LEFT_DOWN, SHIFT_RIGHT_UP, SHIFT_RIGHT_DOWN};
+    private static final int SHIFT_NO_DIRECTION = 0;
+    private static final ShiftResult SHIFT_NO_IMPROVEMENT = new ShiftResult();
 
     private static final int MAX_COLOUR_VALUE_INT = 255;
     private static final float MAX_COLOUR_VALUE = (float)MAX_COLOUR_VALUE_INT;
@@ -59,8 +62,17 @@ public final class SmallShiftBestMatchFinder implements BestMatchFinder {
     }
 
     private Window findBestMatchWindow(Bitmap targetImage, Window targetWindow) {
-        //TODO
-        return null;
+        Window window = targetWindow;
+        ShiftResult shiftResult = new ShiftResult(SHIFT_NO_DIRECTION);
+        while (shiftResult.improved) {
+            shiftResult = diffColourHistogramForShiftedWindows(targetImage, window);
+            if (shiftResult.improved) {
+                fillColourHistogramForShiftedWindow(targetImage, window, colourHistogram, shiftResult.shiftDirection);
+                window = shiftWindow(window, shiftResult.shiftDirection);
+            }
+        }
+
+        return window;
     }
 
     private void fillColourHistogramForShiftedWindow(Bitmap image, Window window, int[] colourHistogram, int shiftDirection) {
@@ -249,9 +261,27 @@ public final class SmallShiftBestMatchFinder implements BestMatchFinder {
         }
     }
 
-    private int diffColourHistogramForShiftedWindow(Bitmap image, Window window, int shiftDirection) {
+    private ShiftResult diffColourHistogramForShiftedWindows(Bitmap image, Window window) {
         final int unShiftedDiff = diffColourHistogramForWindow(image, window);
 
+        int bestShiftDirection = 0;
+        int minDiff = unShiftedDiff;
+        for (int shiftDirection : SHIFT_DIRECTIONS) {
+            final int diff = diffColourHistogramForShiftedWindow(image, window, shiftDirection, unShiftedDiff);
+            if (diff < minDiff) {
+                minDiff = diff;
+                bestShiftDirection = shiftDirection;
+            }
+        }
+
+        if (minDiff < unShiftedDiff) {
+            return new ShiftResult(bestShiftDirection);
+        } else {
+            return SHIFT_NO_IMPROVEMENT;
+        }
+    }
+
+    private int diffColourHistogramForShiftedWindow(Bitmap image, Window window, int shiftDirection, int unShiftedDiff) {
         switch (shiftDirection) {
             case SHIFT_LEFT: return diffColourHistogramForLeftShiftedWindow(image, window, unShiftedDiff);
             case SHIFT_RIGHT: return diffColourHistogramForRightShiftedWindow(image, window, unShiftedDiff);
@@ -419,4 +449,70 @@ public final class SmallShiftBestMatchFinder implements BestMatchFinder {
 
         return bIndex*nSideDivsSq + gIndex*nSideDivs + rIndex;
     }
+
+    private Window shiftWindow(Window window, int shiftDirection) {
+        int dx, dy;
+
+        switch (shiftDirection) {
+            case SHIFT_LEFT:
+                dx = -1;
+                dy = 0;
+                break;
+
+            case SHIFT_RIGHT:
+                dx = 1;
+                dy = 0;
+                break;
+
+            case SHIFT_UP:
+                dx = 0;
+                dy = -1;
+                break;
+
+            case SHIFT_DOWN:
+                dx = 0;
+                dy = 1;
+                break;
+
+            case SHIFT_LEFT_UP:
+                dx = -1;
+                dy = -1;
+                break;
+
+            case SHIFT_LEFT_DOWN:
+                dx = -1;
+                dy = 1;
+                break;
+
+            case SHIFT_RIGHT_UP:
+                dx = 1;
+                dy = -1;
+                break;
+
+            case SHIFT_RIGHT_DOWN:
+                dx = 1;
+                dy = 1;
+                break;
+
+            default: throw new IllegalArgumentException("Illegal shift direction: " + shiftDirection);
+        }
+
+        return window.shift(dx, dy);
+    }
+
+    private static class ShiftResult {
+        public final boolean improved;
+        public final int shiftDirection;
+
+        ShiftResult() {
+            improved = false;
+            shiftDirection = 0;
+        }
+
+        ShiftResult(int shiftDirection) {
+            this.improved = true;
+            this.shiftDirection = shiftDirection;
+        }
+    }
 }
+
