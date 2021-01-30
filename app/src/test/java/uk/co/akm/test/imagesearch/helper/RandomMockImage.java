@@ -16,7 +16,7 @@ final class RandomMockImage extends AbstractMockBitmap {
 
     private void fillRandomPixels(Random random, int[] pixels) {
         for (int i=0 ; i<pixels.length ; i++) {
-            pixels[i] = random.nextInt(0x1000000);
+            pixels[i] = 0xFF000000 | random.nextInt(0x1000000);
         }
     }
 }
