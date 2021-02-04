@@ -87,6 +87,24 @@ public class ColourHistogramTest {
     }
 
     @Test
+    public void shouldShiftColourHistogramRight() {
+        final int width = 10;
+        final int height = 10;
+        final MockBitmap image = MockBitmapFactory.randomMockBitmapInstance(width, height);
+
+        final Window window = new Window(4, 4,4, 4);
+        final int[] colourHistogram = new int[nSideDivs*nSideDivsSq];
+        fillColourHistogramForWindow(image, window, colourHistogram);
+
+        final Window rightShiftedWindow = new Window(window.xMin + 1, window.yMin, window.width, window.height);
+        final int[] expectedColourHistogram = new int[nSideDivs*nSideDivsSq];
+        fillColourHistogramForWindow(image, rightShiftedWindow, expectedColourHistogram);
+
+        fillColourHistogramForShiftedWindow(image, window, SHIFT_RIGHT, colourHistogram);
+        Assert.assertArrayEquals(expectedColourHistogram, colourHistogram);
+    }
+
+    @Test
     public void shouldShiftColourHistogramUp() {
         final int width = 10;
         final int height = 10;
@@ -101,6 +119,24 @@ public class ColourHistogramTest {
         fillColourHistogramForWindow(image, upShiftedWindow, expectedColourHistogram);
 
         fillColourHistogramForShiftedWindow(image, window, SHIFT_UP, colourHistogram);
+        Assert.assertArrayEquals(expectedColourHistogram, colourHistogram);
+    }
+
+    @Test
+    public void shouldShiftColourHistogramDown() {
+        final int width = 10;
+        final int height = 10;
+        final MockBitmap image = MockBitmapFactory.randomMockBitmapInstance(width, height);
+
+        final Window window = new Window(4, 4,4, 4);
+        final int[] colourHistogram = new int[nSideDivs*nSideDivsSq];
+        fillColourHistogramForWindow(image, window, colourHistogram);
+
+        final Window downShiftedWindow = new Window(window.xMin, window.yMin + 1, window.width, window.height);
+        final int[] expectedColourHistogram = new int[nSideDivs*nSideDivsSq];
+        fillColourHistogramForWindow(image, downShiftedWindow, expectedColourHistogram);
+
+        fillColourHistogramForShiftedWindow(image, window, SHIFT_DOWN, colourHistogram);
         Assert.assertArrayEquals(expectedColourHistogram, colourHistogram);
     }
 
@@ -128,8 +164,16 @@ public class ColourHistogramTest {
                 fillColourHistogramForLeftShiftedWindow(image, window, colourHistogram);
                 break;
 
+            case SHIFT_RIGHT:
+                fillColourHistogramForRightShiftedWindow(image, window, colourHistogram);
+                break;
+
             case SHIFT_UP:
                 fillColourHistogramForUpShiftedWindow(image, window, colourHistogram);
+                break;
+
+            case SHIFT_DOWN:
+                fillColourHistogramForDownShiftedWindow(image, window, colourHistogram);
                 break;
 
             case SHIFT_LEFT_UP:
@@ -149,10 +193,26 @@ public class ColourHistogramTest {
         }
     }
 
+    private void fillColourHistogramForRightShiftedWindow(MockBitmap image, Window window, int[] colourHistogram) {
+        final int xNew = window.xMax + 1;
+        for (int j=window.yMin ; j<=window.yMax ; j++) {
+            subtractFromColourHistogram(image, window.xMin, j, colourHistogram);
+            addToColourHistogram(image, xNew, j, colourHistogram);
+        }
+    }
+
     private void fillColourHistogramForUpShiftedWindow(MockBitmap image, Window window, int[] colourHistogram) {
         final int yNew = window.yMin - 1;
         for (int i=window.xMin ; i<=window.xMax ; i++) {
             subtractFromColourHistogram(image, i, window.yMax, colourHistogram);
+            addToColourHistogram(image, i, yNew, colourHistogram);
+        }
+    }
+
+    private void fillColourHistogramForDownShiftedWindow(MockBitmap image, Window window, int[] colourHistogram) {
+        final int yNew = window.yMax + 1;
+        for (int i=window.xMin ; i<=window.xMax ; i++) {
+            subtractFromColourHistogram(image, i, window.yMin, colourHistogram);
             addToColourHistogram(image, i, yNew, colourHistogram);
         }
     }
