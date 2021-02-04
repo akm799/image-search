@@ -158,6 +158,24 @@ public class ColourHistogramTest {
         Assert.assertArrayEquals(expectedColourHistogram, colourHistogram);
     }
 
+    @Test
+    public void shouldShiftColourHistogramLeftDown() {
+        final int width = 10;
+        final int height = 10;
+        final MockBitmap image = MockBitmapFactory.randomMockBitmapInstance(width, height);
+
+        final Window window = new Window(5, 5,4, 4);
+        final int[] colourHistogram = new int[nSideDivs*nSideDivsSq];
+        fillColourHistogramForWindow(image, window, colourHistogram);
+
+        final Window leftDownShiftedWindow = new Window(window.xMin - 1, window.yMin + 1, window.width, window.height);
+        final int[] expectedColourHistogram = new int[nSideDivs*nSideDivsSq];
+        fillColourHistogramForWindow(image, leftDownShiftedWindow, expectedColourHistogram);
+
+        fillColourHistogramForShiftedWindow(image, window, SHIFT_LEFT_DOWN, colourHistogram);
+        Assert.assertArrayEquals(expectedColourHistogram, colourHistogram);
+    }
+
     private void fillColourHistogramForShiftedWindow(MockBitmap image, Window window, int shiftDirection, int[] colourHistogram) {
         switch (shiftDirection) {
             case SHIFT_LEFT:
@@ -178,6 +196,10 @@ public class ColourHistogramTest {
 
             case SHIFT_LEFT_UP:
                 fillColourHistogramForLeftUpShiftedWindow(image, window, colourHistogram);
+                break;
+
+            case SHIFT_LEFT_DOWN:
+                fillColourHistogramForLeftDownShiftedWindow(image, window, colourHistogram);
                 break;
 
             default:
@@ -235,6 +257,28 @@ public class ColourHistogramTest {
 
         // Corners (we process corners separately so we do not double-count them)
         subtractFromColourHistogram(image, window.xMax, window.yMax, colourHistogram);
+        addToColourHistogram(image, xNew, yNew, colourHistogram);
+    }
+
+    private void fillColourHistogramForLeftDownShiftedWindow(MockBitmap image, Window window, int[] colourHistogram) {
+        final int xNew = window.xMin - 1;
+        final int yNew = window.yMax + 1;
+
+        // Vertical lines
+        final int yMin = window.yMin + 1;
+        for (int j=yMin ; j<=window.yMax ; j++) {
+            subtractFromColourHistogram(image, window.xMax, j, colourHistogram);
+            addToColourHistogram(image, xNew, j, colourHistogram);
+        }
+
+        // Horizontal lines
+        for (int i=window.xMin ; i<window.xMax ; i++) {
+            subtractFromColourHistogram(image, i, window.yMin, colourHistogram);
+            addToColourHistogram(image, i, yNew, colourHistogram);
+        }
+
+        // Corners (we process corners separately so we do not double-count them)
+        subtractFromColourHistogram(image, window.xMax, window.yMin, colourHistogram);
         addToColourHistogram(image, xNew, yNew, colourHistogram);
     }
 
