@@ -23,6 +23,9 @@ public class ColourHistogramTest {
     private static final int SHIFT_RIGHT_UP = 7;
     private static final int SHIFT_RIGHT_DOWN = 8;
 
+    private static final int DX_INDEX = 0;
+    private static final int DY_INDEX = 1;
+
     private final int nSideDivs = 51;
     private final int nSideDivsSq = nSideDivs * nSideDivs;
     private final float binWidth = MAX_COLOUR_VALUE/nSideDivs;
@@ -70,146 +73,86 @@ public class ColourHistogramTest {
 
     @Test
     public void shouldShiftColourHistogramLeft() {
-        final int width = 10;
-        final int height = 10;
-        final MockBitmap image = MockBitmapFactory.randomMockBitmapInstance(width, height);
-
-        final Window window = new Window(5, 5,4, 4);
-        final int[] colourHistogram = new int[nSideDivs*nSideDivsSq];
-        fillColourHistogramForWindow(image, window, colourHistogram);
-
-        final Window leftShiftedWindow = new Window(window.xMin - 1, window.yMin, window.width, window.height);
-        final int[] expectedColourHistogram = new int[nSideDivs*nSideDivsSq];
-        fillColourHistogramForWindow(image, leftShiftedWindow, expectedColourHistogram);
-
-        fillColourHistogramForShiftedWindow(image, window, SHIFT_LEFT, colourHistogram);
-        Assert.assertArrayEquals(expectedColourHistogram, colourHistogram);
+        shiftColourHistogramTest(SHIFT_LEFT);
     }
 
     @Test
     public void shouldShiftColourHistogramRight() {
-        final int width = 10;
-        final int height = 10;
-        final MockBitmap image = MockBitmapFactory.randomMockBitmapInstance(width, height);
-
-        final Window window = new Window(4, 4,4, 4);
-        final int[] colourHistogram = new int[nSideDivs*nSideDivsSq];
-        fillColourHistogramForWindow(image, window, colourHistogram);
-
-        final Window rightShiftedWindow = new Window(window.xMin + 1, window.yMin, window.width, window.height);
-        final int[] expectedColourHistogram = new int[nSideDivs*nSideDivsSq];
-        fillColourHistogramForWindow(image, rightShiftedWindow, expectedColourHistogram);
-
-        fillColourHistogramForShiftedWindow(image, window, SHIFT_RIGHT, colourHistogram);
-        Assert.assertArrayEquals(expectedColourHistogram, colourHistogram);
+        shiftColourHistogramTest(SHIFT_RIGHT);
     }
 
     @Test
     public void shouldShiftColourHistogramUp() {
-        final int width = 10;
-        final int height = 10;
-        final MockBitmap image = MockBitmapFactory.randomMockBitmapInstance(width, height);
-
-        final Window window = new Window(5, 5,4, 4);
-        final int[] colourHistogram = new int[nSideDivs*nSideDivsSq];
-        fillColourHistogramForWindow(image, window, colourHistogram);
-
-        final Window upShiftedWindow = new Window(window.xMin, window.yMin - 1, window.width, window.height);
-        final int[] expectedColourHistogram = new int[nSideDivs*nSideDivsSq];
-        fillColourHistogramForWindow(image, upShiftedWindow, expectedColourHistogram);
-
-        fillColourHistogramForShiftedWindow(image, window, SHIFT_UP, colourHistogram);
-        Assert.assertArrayEquals(expectedColourHistogram, colourHistogram);
+        shiftColourHistogramTest(SHIFT_UP);
     }
 
     @Test
     public void shouldShiftColourHistogramDown() {
-        final int width = 10;
-        final int height = 10;
-        final MockBitmap image = MockBitmapFactory.randomMockBitmapInstance(width, height);
-
-        final Window window = new Window(4, 4,4, 4);
-        final int[] colourHistogram = new int[nSideDivs*nSideDivsSq];
-        fillColourHistogramForWindow(image, window, colourHistogram);
-
-        final Window downShiftedWindow = new Window(window.xMin, window.yMin + 1, window.width, window.height);
-        final int[] expectedColourHistogram = new int[nSideDivs*nSideDivsSq];
-        fillColourHistogramForWindow(image, downShiftedWindow, expectedColourHistogram);
-
-        fillColourHistogramForShiftedWindow(image, window, SHIFT_DOWN, colourHistogram);
-        Assert.assertArrayEquals(expectedColourHistogram, colourHistogram);
+        shiftColourHistogramTest(SHIFT_DOWN);
     }
 
     @Test
     public void shouldShiftColourHistogramLeftUp() {
-        final int width = 10;
-        final int height = 10;
-        final MockBitmap image = MockBitmapFactory.randomMockBitmapInstance(width, height);
-
-        final Window window = new Window(5, 5,4, 4);
-        final int[] colourHistogram = new int[nSideDivs*nSideDivsSq];
-        fillColourHistogramForWindow(image, window, colourHistogram);
-
-        final Window leftUpShiftedWindow = new Window(window.xMin - 1, window.yMin - 1, window.width, window.height);
-        final int[] expectedColourHistogram = new int[nSideDivs*nSideDivsSq];
-        fillColourHistogramForWindow(image, leftUpShiftedWindow, expectedColourHistogram);
-
-        fillColourHistogramForShiftedWindow(image, window, SHIFT_LEFT_UP, colourHistogram);
-        Assert.assertArrayEquals(expectedColourHistogram, colourHistogram);
+        shiftColourHistogramTest(SHIFT_LEFT_UP);
     }
 
     @Test
     public void shouldShiftColourHistogramLeftDown() {
-        final int width = 10;
-        final int height = 10;
-        final MockBitmap image = MockBitmapFactory.randomMockBitmapInstance(width, height);
-
-        final Window window = new Window(5, 5,4, 4);
-        final int[] colourHistogram = new int[nSideDivs*nSideDivsSq];
-        fillColourHistogramForWindow(image, window, colourHistogram);
-
-        final Window leftDownShiftedWindow = new Window(window.xMin - 1, window.yMin + 1, window.width, window.height);
-        final int[] expectedColourHistogram = new int[nSideDivs*nSideDivsSq];
-        fillColourHistogramForWindow(image, leftDownShiftedWindow, expectedColourHistogram);
-
-        fillColourHistogramForShiftedWindow(image, window, SHIFT_LEFT_DOWN, colourHistogram);
-        Assert.assertArrayEquals(expectedColourHistogram, colourHistogram);
+        shiftColourHistogramTest(SHIFT_LEFT_DOWN);
     }
 
     @Test
     public void shouldShiftColourHistogramRightUp() {
-        final int width = 10;
-        final int height = 10;
-        final MockBitmap image = MockBitmapFactory.randomMockBitmapInstance(width, height);
-
-        final Window window = new Window(4, 5,4, 4);
-        final int[] colourHistogram = new int[nSideDivs*nSideDivsSq];
-        fillColourHistogramForWindow(image, window, colourHistogram);
-
-        final Window rightUpShiftedWindow = new Window(window.xMin + 1, window.yMin - 1, window.width, window.height);
-        final int[] expectedColourHistogram = new int[nSideDivs*nSideDivsSq];
-        fillColourHistogramForWindow(image, rightUpShiftedWindow, expectedColourHistogram);
-
-        fillColourHistogramForShiftedWindow(image, window, SHIFT_RIGHT_UP, colourHistogram);
-        Assert.assertArrayEquals(expectedColourHistogram, colourHistogram);
+        shiftColourHistogramTest(SHIFT_RIGHT_UP);
     }
 
     @Test
     public void shouldShiftColourHistogramRightDown() {
-        final int width = 10;
-        final int height = 10;
+        shiftColourHistogramTest(SHIFT_RIGHT_DOWN);
+    }
+
+    private void shiftColourHistogramTest(int shiftDirection) {
+        final int[] dxy = getShift(shiftDirection);
+        final int dx = dxy[DX_INDEX];
+        final int dy = dxy[DY_INDEX];
+
+        final int width = 15;
+        final int height = 15;
         final MockBitmap image = MockBitmapFactory.randomMockBitmapInstance(width, height);
 
-        final Window window = new Window(4, 4,4, 4);
+        final Window window = new Window(7, 7,4, 4);
         final int[] colourHistogram = new int[nSideDivs*nSideDivsSq];
         fillColourHistogramForWindow(image, window, colourHistogram);
 
-        final Window rightUpShiftedWindow = new Window(window.xMin + 1, window.yMin + 1, window.width, window.height);
+        final Window shiftedWindow = new Window(window.xMin + dx, window.yMin + dy, window.width, window.height);
         final int[] expectedColourHistogram = new int[nSideDivs*nSideDivsSq];
-        fillColourHistogramForWindow(image, rightUpShiftedWindow, expectedColourHistogram);
+        fillColourHistogramForWindow(image, shiftedWindow, expectedColourHistogram);
 
-        fillColourHistogramForShiftedWindow(image, window, SHIFT_RIGHT_DOWN, colourHistogram);
+        fillColourHistogramForShiftedWindow(image, window, shiftDirection, colourHistogram);
         Assert.assertArrayEquals(expectedColourHistogram, colourHistogram);
+    }
+
+    private int[] getShift(int shiftDirection) {
+        switch (shiftDirection) {
+            case SHIFT_LEFT: return new int[]{-1, 0};
+
+            case SHIFT_RIGHT: return new int[]{1, 0};
+
+            case SHIFT_UP: return new int[]{0, -1};
+
+            case SHIFT_DOWN: return new int[]{0, 1};
+
+            case SHIFT_LEFT_UP: return new int[]{-1, -1};
+
+            case SHIFT_LEFT_DOWN: return new int[]{-1, 1};
+
+            case SHIFT_RIGHT_UP: return new int[]{1, -1};
+
+            case SHIFT_RIGHT_DOWN: return new int[]{1, 1};
+
+            default:
+                throw new IllegalArgumentException("Unexpected shift direction: " + shiftDirection);
+        }
     }
 
     private void fillColourHistogramForShiftedWindow(MockBitmap image, Window window, int shiftDirection, int[] colourHistogram) {
