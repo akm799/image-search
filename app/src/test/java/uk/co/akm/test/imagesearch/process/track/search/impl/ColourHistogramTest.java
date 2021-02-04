@@ -14,6 +14,15 @@ public class ColourHistogramTest {
     private static final int MAX_COLOUR_VALUE_INT = 255;
     private static final float MAX_COLOUR_VALUE = (float)MAX_COLOUR_VALUE_INT;
 
+    private static final int SHIFT_LEFT = 1;
+    private static final int SHIFT_RIGHT = 2;
+    private static final int SHIFT_UP = 3;
+    private static final int SHIFT_DOWN = 4;
+    private static final int SHIFT_LEFT_UP = 5;
+    private static final int SHIFT_LEFT_DOWN = 6;
+    private static final int SHIFT_RIGHT_UP = 7;
+    private static final int SHIFT_RIGHT_DOWN = 8;
+
     private final int nSideDivs = 51;
     private final int nSideDivsSq = nSideDivs * nSideDivs;
     private final float binWidth = MAX_COLOUR_VALUE/nSideDivs;
@@ -59,6 +68,116 @@ public class ColourHistogramTest {
         }
     }
 
+    @Test
+    public void shouldShiftColourHistogramLeft() {
+        final int width = 10;
+        final int height = 10;
+        final MockBitmap image = MockBitmapFactory.randomMockBitmapInstance(width, height);
+
+        final Window window = new Window(5, 5,4, 4);
+        final int[] colourHistogram = new int[nSideDivs*nSideDivsSq];
+        fillColourHistogramForWindow(image, window, colourHistogram);
+
+        final Window leftShiftedWindow = new Window(window.xMin - 1, window.yMin, window.width, window.height);
+        final int[] expectedColourHistogram = new int[nSideDivs*nSideDivsSq];
+        fillColourHistogramForWindow(image, leftShiftedWindow, expectedColourHistogram);
+
+        fillColourHistogramForShiftedWindow(image, window, SHIFT_LEFT, colourHistogram);
+        Assert.assertArrayEquals(expectedColourHistogram, colourHistogram);
+    }
+
+    @Test
+    public void shouldShiftColourHistogramUp() {
+        final int width = 10;
+        final int height = 10;
+        final MockBitmap image = MockBitmapFactory.randomMockBitmapInstance(width, height);
+
+        final Window window = new Window(5, 5,4, 4);
+        final int[] colourHistogram = new int[nSideDivs*nSideDivsSq];
+        fillColourHistogramForWindow(image, window, colourHistogram);
+
+        final Window upShiftedWindow = new Window(window.xMin, window.yMin - 1, window.width, window.height);
+        final int[] expectedColourHistogram = new int[nSideDivs*nSideDivsSq];
+        fillColourHistogramForWindow(image, upShiftedWindow, expectedColourHistogram);
+
+        fillColourHistogramForShiftedWindow(image, window, SHIFT_UP, colourHistogram);
+        Assert.assertArrayEquals(expectedColourHistogram, colourHistogram);
+    }
+
+    @Test
+    public void shouldShiftColourHistogramLeftUp() {
+        final int width = 10;
+        final int height = 10;
+        final MockBitmap image = MockBitmapFactory.randomMockBitmapInstance(width, height);
+
+        final Window window = new Window(5, 5,4, 4);
+        final int[] colourHistogram = new int[nSideDivs*nSideDivsSq];
+        fillColourHistogramForWindow(image, window, colourHistogram);
+
+        final Window leftUpShiftedWindow = new Window(window.xMin - 1, window.yMin - 1, window.width, window.height);
+        final int[] expectedColourHistogram = new int[nSideDivs*nSideDivsSq];
+        fillColourHistogramForWindow(image, leftUpShiftedWindow, expectedColourHistogram);
+
+        fillColourHistogramForShiftedWindow(image, window, SHIFT_LEFT_UP, colourHistogram);
+        Assert.assertArrayEquals(expectedColourHistogram, colourHistogram);
+    }
+
+    private void fillColourHistogramForShiftedWindow(MockBitmap image, Window window, int shiftDirection, int[] colourHistogram) {
+        switch (shiftDirection) {
+            case SHIFT_LEFT:
+                fillColourHistogramForLeftShiftedWindow(image, window, colourHistogram);
+                break;
+
+            case SHIFT_UP:
+                fillColourHistogramForUpShiftedWindow(image, window, colourHistogram);
+                break;
+
+            case SHIFT_LEFT_UP:
+                fillColourHistogramForLeftUpShiftedWindow(image, window, colourHistogram);
+                break;
+
+            default:
+                throw new IllegalArgumentException("Unexpected shift direction: " + shiftDirection);
+        }
+    }
+
+    private void fillColourHistogramForLeftShiftedWindow(MockBitmap image, Window window, int[] colourHistogram) {
+        final int xNew = window.xMin - 1;
+        for (int j=window.yMin ; j<=window.yMax ; j++) {
+            subtractFromColourHistogram(image, window.xMax, j, colourHistogram);
+            addToColourHistogram(image, xNew, j, colourHistogram);
+        }
+    }
+
+    private void fillColourHistogramForUpShiftedWindow(MockBitmap image, Window window, int[] colourHistogram) {
+        final int yNew = window.yMin - 1;
+        for (int i=window.xMin ; i<=window.xMax ; i++) {
+            subtractFromColourHistogram(image, i, window.yMax, colourHistogram);
+            addToColourHistogram(image, i, yNew, colourHistogram);
+        }
+    }
+
+    private void fillColourHistogramForLeftUpShiftedWindow(MockBitmap image, Window window, int[] colourHistogram) {
+        final int xNew = window.xMin - 1;
+        final int yNew = window.yMin - 1;
+
+        // Vertical lines
+        for (int j=window.yMin ; j<window.yMax ; j++) {
+            subtractFromColourHistogram(image, window.xMax, j, colourHistogram);
+            addToColourHistogram(image, xNew, j, colourHistogram);
+        }
+
+        // Horizontal lines
+        for (int i=window.xMin ; i<window.xMax ; i++) {
+            subtractFromColourHistogram(image, i, window.yMax, colourHistogram);
+            addToColourHistogram(image, i, yNew, colourHistogram);
+        }
+
+        // Corners (we process corners separately so we do not double-count them)
+        subtractFromColourHistogram(image, window.xMax, window.yMax, colourHistogram);
+        addToColourHistogram(image, xNew, yNew, colourHistogram);
+    }
+
     private void fillColourHistogramForWindow(MockBitmap image, Window window, int[] colourHistogram) {
         Arrays.fill(colourHistogram, 0);
 
@@ -72,6 +191,11 @@ public class ColourHistogramTest {
     private void addToColourHistogram(MockBitmap image, int x, int y, int[] colourHistogram) {
         final int binIndex = getColourHistogramIndexForPixel(image, x, y);
         colourHistogram[binIndex]++;
+    }
+
+    private void subtractFromColourHistogram(MockBitmap image, int x, int y, int[] colourHistogram) {
+        final int binIndex = getColourHistogramIndexForPixel(image, x, y);
+        colourHistogram[binIndex]--;
     }
 
     private int getColourHistogramIndexForPixel(MockBitmap image, int x, int y) {
