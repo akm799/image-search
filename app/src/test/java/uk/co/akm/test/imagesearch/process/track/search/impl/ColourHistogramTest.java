@@ -43,7 +43,7 @@ public class ColourHistogramTest {
         final int height = 10;
         final MockBitmap image = MockBitmapFactory.randomMockBitmapInstance(width, height);
         final Window window = new Window(0, 0, width, height);
-        final int[] colourHistogram = new int[nSideDivs*nSideDivsSq];
+        final int[] colourHistogram = colourHistogramInstance();
         fillColourHistogramForWindow(image, window, colourHistogram);
 
         // Check that histogram is not empty.
@@ -111,6 +111,40 @@ public class ColourHistogramTest {
         shiftColourHistogramTest(SHIFT_RIGHT_DOWN);
     }
 
+    @Test
+    public void shouldDiffColourHistograms() {
+        final int width = 50;
+        final int height = 50;
+
+        final MockBitmap image1 = MockBitmapFactory.randomMockBitmapInstance(width, height);
+        final MockBitmap image2 = MockBitmapFactory.randomMockBitmapInstance(width, height);
+
+        final int[] colourHistogram1 = colourHistogramInstance();
+        fillColourHistogramForWindow(image1, new Window(0, 0, width, height), colourHistogram1);
+
+        final int[] colourHistogram2 = colourHistogramInstance();
+        fillColourHistogramForWindow(image2, new Window(0, 0, width/2, height/2), colourHistogram2);
+
+        final int diff = diffHistograms(colourHistogram1, colourHistogram2);
+        Assert.assertTrue(diff > 0);
+    }
+
+    @Test
+    public void shouldZeroDiffIdenticalColourHistograms() {
+        final int width = 50;
+        final int height = 50;
+        final MockBitmap image = MockBitmapFactory.randomMockBitmapInstance(width, height);
+
+        final int[] colourHistogram1 = colourHistogramInstance();
+        fillColourHistogramForWindow(image, new Window(0, 0, width, height), colourHistogram1);
+
+        final int[] colourHistogram2 = colourHistogramInstance();
+        fillColourHistogramForWindow(image, new Window(0, 0, width, height), colourHistogram2);
+
+        final int diff = diffHistograms(colourHistogram1, colourHistogram2);
+        Assert.assertEquals(0, diff);
+    }
+
     private void shiftColourHistogramTest(int shiftDirection) {
         final int[] dxy = getShift(shiftDirection);
         final int dx = dxy[DX_INDEX];
@@ -121,11 +155,11 @@ public class ColourHistogramTest {
         final MockBitmap image = MockBitmapFactory.randomMockBitmapInstance(width, height);
 
         final Window window = new Window(7, 7,4, 4);
-        final int[] colourHistogram = new int[nSideDivs*nSideDivsSq];
+        final int[] colourHistogram = colourHistogramInstance();
         fillColourHistogramForWindow(image, window, colourHistogram);
 
         final Window shiftedWindow = new Window(window.xMin + dx, window.yMin + dy, window.width, window.height);
-        final int[] expectedColourHistogram = new int[nSideDivs*nSideDivsSq];
+        final int[] expectedColourHistogram = colourHistogramInstance();
         fillColourHistogramForWindow(image, shiftedWindow, expectedColourHistogram);
 
         fillColourHistogramForShiftedWindow(image, window, shiftDirection, colourHistogram);
@@ -354,5 +388,22 @@ public class ColourHistogramTest {
         } else {
             return (int) (rgbComponent/binWidth);
         }
+    }
+
+    private int diffHistograms(int[] histogram1, int[] histogram2) {
+        if (histogram1.length != histogram2.length) {
+            throw new IllegalArgumentException("The input histograms do not have equal lengths (" + histogram1.length + " != " + histogram2.length + ").");
+        }
+
+        int diff = 0;
+        for (int i=0 ; i<histogram1.length ; i++) {
+            diff += Math.abs(histogram2[i] - histogram1[i]);
+        }
+
+        return diff;
+    }
+
+    private int[] colourHistogramInstance() {
+        return new int[nSideDivs*nSideDivsSq];
     }
 }
