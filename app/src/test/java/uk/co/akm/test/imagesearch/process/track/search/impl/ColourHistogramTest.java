@@ -127,6 +127,9 @@ public class ColourHistogramTest {
 
         final int diff = diffHistograms(colourHistogram1, colourHistogram2);
         Assert.assertTrue(diff > 0);
+
+        final int diff2 = diffHistogramsMemoryInefficient(colourHistogram1, colourHistogram2);
+        Assert.assertEquals(diff, diff2);
     }
 
     @Test
@@ -143,6 +146,9 @@ public class ColourHistogramTest {
 
         final int diff = diffHistograms(colourHistogram1, colourHistogram2);
         Assert.assertEquals(0, diff);
+
+        final int diff2 = diffHistogramsMemoryInefficient(colourHistogram1, colourHistogram2);
+        Assert.assertEquals(diff, diff2);
     }
 
     private void shiftColourHistogramTest(int shiftDirection) {
@@ -401,6 +407,29 @@ public class ColourHistogramTest {
         }
 
         return diff;
+    }
+
+    private int diffHistogramsMemoryInefficient(int[] histogram1, int[] histogram2) {
+        int diff = 0;
+        final int[] diffHistogram = buildDiffHistogram(histogram1, histogram2);
+        for (int i=0 ; i<histogram1.length ; i++) {
+            diff += diffHistogram[i];
+        }
+
+        return diff;
+    }
+
+    private int[] buildDiffHistogram(int[] histogram1, int[] histogram2) {
+        if (histogram1.length != histogram2.length) {
+            throw new IllegalArgumentException("The input histograms do not have equal lengths (" + histogram1.length + " != " + histogram2.length + ").");
+        }
+
+        final int[] diffHistogram = new int[histogram1.length];
+        for (int i=0 ; i<histogram1.length ; i++) {
+            diffHistogram[i] = Math.abs(histogram2[i] - histogram1[i]);
+        }
+
+        return diffHistogram;
     }
 
     private int[] colourHistogramInstance() {
