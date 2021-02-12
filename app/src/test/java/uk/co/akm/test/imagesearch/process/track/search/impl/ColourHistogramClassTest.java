@@ -12,6 +12,7 @@ public class ColourHistogramClassTest {
     private static final int DY_INDEX = 1;
 
     private final int nSideDivs = 51;
+
     @Test
     public void shouldFillColourHistogram() {
         final int width = 10;

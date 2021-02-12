@@ -29,15 +29,10 @@ final class ColourHistogram {
         this.nSideDivsSq = nSideDivs * nSideDivs;
         this.binWidth = MAX_COLOUR_VALUE / nSideDivs;
         this.bins = new int[nSideDivs * nSideDivsSq];
-
-        Arrays.fill(bins, 0);
     }
 
     ColourHistogram(ColourHistogram data) {
-        this.nSideDivs = data.nSideDivs;
-        this.nSideDivsSq = nSideDivs * nSideDivs;
-        this.binWidth = MAX_COLOUR_VALUE / nSideDivs;
-        this.bins = new int[nSideDivs * nSideDivsSq];
+        this(data.nSideDivs);
 
         System.arraycopy(data.bins, 0, bins, 0, bins.length);
     }
@@ -56,6 +51,8 @@ final class ColourHistogram {
     }
 
     void fillColourHistogramForWindow(MockBitmap image, Window window) {
+        Arrays.fill(bins, 0);
+
         for (int j=window.yMin ; j<=window.yMax ; j++) {
             for (int i=window.xMin ; i<=window.xMax ; i++) {
                 addToColourHistogram(image, i, j);
