@@ -70,7 +70,7 @@ public final class SmallShiftBestMatchFinder implements BestMatchFinder {
     private int diff(ColourHistogram unShiftedColourHistogram, Bitmap image, Window window, int shiftDirection) {
         final ColourHistogram shiftedColourHistogram = shift(unShiftedColourHistogram, image, window, shiftDirection);
 
-        return unShiftedColourHistogram.diff(shiftedColourHistogram);
+        return colourHistogram.diff(shiftedColourHistogram);
     }
 
     private ColourHistogram shift(ColourHistogram unShiftedColourHistogram, Bitmap image, Window window, int shiftDirection) {
