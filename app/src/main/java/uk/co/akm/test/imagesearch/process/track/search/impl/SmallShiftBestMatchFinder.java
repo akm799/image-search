@@ -35,9 +35,9 @@ public final class SmallShiftBestMatchFinder implements BestMatchFinder {
 
     private Window findBestMatchWindow(Bitmap targetImage, Window startWindow) {
         Window window = startWindow;
-        ShiftResult shiftResult = new ShiftResult(SHIFT_NO_DIRECTION);
+        ShiftResult shiftResult = new ShiftResult(SHIFT_NO_DIRECTION, Integer.MAX_VALUE);
         while (shiftResult.improved) {
-            shiftResult = findBestShiftDirection(targetImage, window);
+            shiftResult = findBestShiftDirection(targetImage, window, shiftResult.diff);
             if (shiftResult.improved) {
                 window = shiftWindow(window, shiftResult.shiftDirection);
                 trackingColourHistogram.fillColourHistogramForWindow(targetImage, window);
@@ -47,9 +47,7 @@ public final class SmallShiftBestMatchFinder implements BestMatchFinder {
         return window;
     }
 
-    private ShiftResult findBestShiftDirection(Bitmap image, Window window) {
-        final int unShiftedDiff = colourHistogram.diff(trackingColourHistogram); //TODO Optimise this: Shift result can also return the diff. We do not need to caculate it again.
-
+    private ShiftResult findBestShiftDirection(Bitmap image, Window window, int unShiftedDiff) {
         int minDiff = unShiftedDiff;
         int bestShiftDirection = SHIFT_NO_DIRECTION;
         for (int shiftDirection : ColourHistogram.SHIFT_DIRECTIONS) {
@@ -61,7 +59,7 @@ public final class SmallShiftBestMatchFinder implements BestMatchFinder {
         }
 
         if (minDiff < unShiftedDiff) {
-            return new ShiftResult(bestShiftDirection);
+            return new ShiftResult(bestShiftDirection, minDiff);
         } else {
             return SHIFT_NO_IMPROVEMENT;
         }
@@ -133,15 +131,18 @@ public final class SmallShiftBestMatchFinder implements BestMatchFinder {
     private static class ShiftResult {
         public final boolean improved;
         public final int shiftDirection;
+        public final int diff;
 
         ShiftResult() {
             improved = false;
             shiftDirection = 0;
+            diff = Integer.MAX_VALUE;
         }
 
-        ShiftResult(int shiftDirection) {
+        ShiftResult(int shiftDirection, int diff) {
             this.improved = true;
             this.shiftDirection = shiftDirection;
+            this.diff = diff;
         }
     }
 }
