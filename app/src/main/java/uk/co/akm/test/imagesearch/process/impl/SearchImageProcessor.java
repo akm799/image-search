@@ -5,7 +5,7 @@ import android.graphics.Bitmap;
 import uk.co.akm.test.imagesearch.process.ImageProcessor;
 import uk.co.akm.test.imagesearch.process.model.window.ColouredWindow;
 import uk.co.akm.test.imagesearch.process.model.window.Window;
-import uk.co.akm.test.imagesearch.process.track.search.impl.BasicBestMatchFinder2;
+import uk.co.akm.test.imagesearch.process.track.search.impl.BasicBestMatchFinder;
 import uk.co.akm.test.imagesearch.process.track.search.impl.MeanShiftBestMatchFinder;
 import uk.co.akm.test.imagesearch.process.track.search.impl.SmallShiftBestMatchFinder;
 
@@ -25,7 +25,7 @@ public final class SearchImageProcessor implements ImageProcessor {
 
     @Override
     public Bitmap processImage(Bitmap image) {
-        final Window initialMatchWindow = (new BasicBestMatchFinder2()).findBestMatch(image, targetWindow, image);
+        final Window initialMatchWindow = (new BasicBestMatchFinder()).findBestMatch(image, targetWindow, image);
         final Window firstBestMatchWindow = (new MeanShiftBestMatchFinder(initialMatchWindow)).findBestMatch(image, targetWindow, image);
         final Window bestMatchWindow = (new SmallShiftBestMatchFinder(firstBestMatchWindow)).findBestMatch(image, targetWindow, image);
         final ImageProcessor windowImageProcessor = new WindowImageProcessor(new ColouredWindow(bestMatchWindow, bestMatchColour));
