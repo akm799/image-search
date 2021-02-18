@@ -7,7 +7,7 @@ import java.util.Arrays;
 import uk.co.akm.test.imagesearch.process.model.window.Window;
 import uk.co.akm.test.imagesearch.process.util.ColourHelper;
 
-public final class ColourHistogramMap {
+public final class ColourHistogram {
     private static final int MAX_COLOUR_VALUE_INT = 255;
     private static final float MAX_COLOUR_VALUE = (float)MAX_COLOUR_VALUE_INT;
 
@@ -26,14 +26,14 @@ public final class ColourHistogramMap {
     private final float binWidth;
     private final int[] bins;
 
-    public ColourHistogramMap(int nSideDivs) {
+    public ColourHistogram(int nSideDivs) {
         this.nSideDivs = nSideDivs;
         this.nSideDivsSq = nSideDivs * nSideDivs;
         this.binWidth = MAX_COLOUR_VALUE / nSideDivs;
         this.bins = new int[nSideDivs * nSideDivsSq];
     }
 
-    public ColourHistogramMap(ColourHistogramMap data) {
+    public ColourHistogram(ColourHistogram data) {
         this(data.nSideDivs);
 
         System.arraycopy(data.bins, 0, bins, 0, bins.length);
@@ -52,7 +52,7 @@ public final class ColourHistogramMap {
         return new PixelMap(image.getWidth(), values);
     }
 
-    public int diff(ColourHistogramMap other) {
+    public int diff(ColourHistogram other) {
         if (nSideDivs != other.nSideDivs) {
             throw new IllegalArgumentException("Cannot 'diff' unequal colour histograms: this.nSideDivs=" + nSideDivs + " but other.nSideDivs=" + other.nSideDivs);
         }
@@ -235,12 +235,12 @@ public final class ColourHistogramMap {
     }
 
     private void addToColourHistogram(PixelMap image, int x, int y) {
-        final int binIndex = image.getPixel(x, y);
+        final int binIndex = image.getPixel(x, y); // Our 'image' pixel value is the colour histogram bin index.
         bins[binIndex]++;
     }
 
     private void subtractFromColourHistogram(PixelMap image, int x, int y) {
-        final int binIndex = image.getPixel(x, y);
+        final int binIndex = image.getPixel(x, y); // Our 'image' pixel value is the colour histogram bin index.
         bins[binIndex]--;
     }
 

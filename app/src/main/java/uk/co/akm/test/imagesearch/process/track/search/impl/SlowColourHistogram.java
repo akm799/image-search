@@ -7,7 +7,8 @@ import java.util.Arrays;
 import uk.co.akm.test.imagesearch.process.model.window.Window;
 import uk.co.akm.test.imagesearch.process.util.ColourHelper;
 
-final class ColourHistogram {
+@Deprecated
+final class SlowColourHistogram {
     private static final int MAX_COLOUR_VALUE_INT = 255;
     private static final float MAX_COLOUR_VALUE = (float)MAX_COLOUR_VALUE_INT;
 
@@ -26,20 +27,20 @@ final class ColourHistogram {
     private final float binWidth;
     private final int[] bins;
 
-    ColourHistogram(int nSideDivs) {
+    SlowColourHistogram(int nSideDivs) {
         this.nSideDivs = nSideDivs;
         this.nSideDivsSq = nSideDivs * nSideDivs;
         this.binWidth = MAX_COLOUR_VALUE / nSideDivs;
         this.bins = new int[nSideDivs * nSideDivsSq];
     }
 
-    ColourHistogram(ColourHistogram data) {
+    SlowColourHistogram(SlowColourHistogram data) {
         this(data.nSideDivs);
 
         System.arraycopy(data.bins, 0, bins, 0, bins.length);
     }
 
-    int diff(ColourHistogram other) {
+    int diff(SlowColourHistogram other) {
         if (nSideDivs != other.nSideDivs) {
             throw new IllegalArgumentException("Cannot 'diff' unequal colour histograms: this.nSideDivs=" + nSideDivs + " but other.nSideDivs=" + other.nSideDivs);
         }
