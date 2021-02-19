@@ -52,6 +52,10 @@ public final class ColourHistogram {
         return new PixelMap(image.getWidth(), values);
     }
 
+    public int getValueForBin(int binIndex) {
+        return bins[binIndex];
+    }
+
     public int diff(ColourHistogram other) {
         if (nSideDivs != other.nSideDivs) {
             throw new IllegalArgumentException("Cannot 'diff' unequal colour histograms: this.nSideDivs=" + nSideDivs + " but other.nSideDivs=" + other.nSideDivs);
