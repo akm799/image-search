@@ -1,11 +1,11 @@
 package uk.co.akm.test.imagesearch.process.track.search;
 
-import android.graphics.Bitmap;
 
 import uk.co.akm.test.imagesearch.process.model.window.Window;
+import uk.co.akm.test.imagesearch.process.track.search.impl.map.PixelMap;
 
 
 public interface BestMatchFinder {
 
-    Window findBestMatch(Bitmap targetImage, Window targetWindow, Bitmap image);
+    Window findBestMatch(PixelMap image);
 }

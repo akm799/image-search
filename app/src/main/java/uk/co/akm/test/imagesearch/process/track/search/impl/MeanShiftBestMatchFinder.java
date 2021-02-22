@@ -1,6 +1,5 @@
 package uk.co.akm.test.imagesearch.process.track.search.impl;
 
-import android.graphics.Bitmap;
 
 import uk.co.akm.test.imagesearch.process.model.window.Window;
 import uk.co.akm.test.imagesearch.process.track.search.BestMatchFinder;
@@ -18,27 +17,23 @@ public final class MeanShiftBestMatchFinder implements BestMatchFinder {
     private static final int D_PIXEL_TOLERANCE = 0;
     private static final int N_ITERATIONS_MAX = 100;
 
-    private final int nSideDivs = 51;
-    private final ColourHistogram colourHistogram = new ColourHistogram(nSideDivs);
+    private final int[][] weights;
+    private final ColourHistogram colourHistogram;
 
-    private int[][] weights;
     private Window trackingWindow;
 
-    public MeanShiftBestMatchFinder(Window initialTrackingWindow) {
-        trackingWindow = new Window(initialTrackingWindow);
+    public MeanShiftBestMatchFinder(ColourHistogram colourHistogram, Window initialTrackingWindow) {
+        this.colourHistogram = colourHistogram;
+        this.trackingWindow = new Window(initialTrackingWindow);
+        this.weights = new int[trackingWindow.height + 1][trackingWindow.width + 1];
     }
 
     @Override
-    public Window findBestMatch(Bitmap targetImage, Window targetWindow, Bitmap image) {
-        final PixelMap targetImageMap = colourHistogram.toPixelMap(targetImage);
-
-        colourHistogram.fillColourHistogramForWindow(targetImageMap, targetWindow);
-        weights = new int[trackingWindow.height + 1][trackingWindow.width + 1];
-
+    public Window findBestMatch(PixelMap image) {
         int n = 0;
         boolean notConverged = true;
         while (notConverged && n < N_ITERATIONS_MAX) {
-            notConverged = !shiftCentre(targetImageMap, trackingWindow);
+            notConverged = !shiftCentre(image, trackingWindow);
             n++;
         }
 

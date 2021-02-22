@@ -52,6 +52,10 @@ public final class ColourHistogram {
         return new PixelMap(image.getWidth(), values);
     }
 
+    public int getNSideDivs() {
+        return nSideDivs;
+    }
+
     public int getValueForBin(int binIndex) {
         return bins[binIndex];
     }

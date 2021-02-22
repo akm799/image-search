@@ -1,8 +1,6 @@
 package uk.co.akm.test.imagesearch.process.track.search.impl;
 
 
-import android.graphics.Bitmap;
-
 import uk.co.akm.test.imagesearch.process.model.window.Window;
 import uk.co.akm.test.imagesearch.process.track.search.BestMatchFinder;
 import uk.co.akm.test.imagesearch.process.track.search.impl.map.ColourHistogram;
@@ -15,34 +13,31 @@ public final class SmallShiftBestMatchFinder implements BestMatchFinder {
     private static final int SHIFT_NO_DIRECTION = 0;
     private static final ShiftResult SHIFT_NO_IMPROVEMENT = new ShiftResult();
 
-
-    private final int nSideDivs = 51;
-    private final ColourHistogram colourHistogram = new ColourHistogram(nSideDivs);
-    private final ColourHistogram trackingColourHistogram = new ColourHistogram(nSideDivs);
-
     private final Window initialWindow;
+    private final ColourHistogram colourHistogram;
+    private final ColourHistogram trackingColourHistogram;
 
-    public SmallShiftBestMatchFinder(Window initialWindow) {
+    public SmallShiftBestMatchFinder(ColourHistogram colourHistogram, Window initialWindow) {
         this.initialWindow = new Window(initialWindow);
+        this.colourHistogram = colourHistogram;
+        this.trackingColourHistogram = new ColourHistogram(colourHistogram.getNSideDivs());
     }
 
     @Override
-    public Window findBestMatch(Bitmap targetImage, Window targetWindow, Bitmap image) {
-        final PixelMap targetImageMap = colourHistogram.toPixelMap(targetImage);
-        colourHistogram.fillColourHistogramForWindow(targetImageMap, targetWindow);
-        trackingColourHistogram.fillColourHistogramForWindow(targetImageMap, initialWindow);
+    public Window findBestMatch(PixelMap image) {
+        trackingColourHistogram.fillColourHistogramForWindow(image, initialWindow);
 
-        return findBestMatchWindow(targetImageMap, initialWindow);
+        return findBestMatchWindow(image, initialWindow);
     }
 
-    private Window findBestMatchWindow(PixelMap targetImage, Window startWindow) {
+    private Window findBestMatchWindow(PixelMap image, Window startWindow) {
         Window window = startWindow;
         ShiftResult shiftResult = new ShiftResult(SHIFT_NO_DIRECTION, Integer.MAX_VALUE);
         while (shiftResult.improved) {
-            shiftResult = findBestShiftDirection(targetImage, window, shiftResult.diff);
+            shiftResult = findBestShiftDirection(image, window, shiftResult.diff);
             if (shiftResult.improved) {
                 window = shiftWindow(window, shiftResult.shiftDirection);
-                trackingColourHistogram.fillColourHistogramForWindow(targetImage, window);
+                trackingColourHistogram.fillColourHistogramForWindow(image, window);
             }
         }
 
@@ -52,7 +47,7 @@ public final class SmallShiftBestMatchFinder implements BestMatchFinder {
     private ShiftResult findBestShiftDirection(PixelMap image, Window window, int unShiftedDiff) {
         int minDiff = unShiftedDiff;
         int bestShiftDirection = SHIFT_NO_DIRECTION;
-        for (int shiftDirection : SlowColourHistogram.SHIFT_DIRECTIONS) {
+        for (int shiftDirection : ColourHistogram.SHIFT_DIRECTIONS) {
             final int diff = diff(trackingColourHistogram, image, window, shiftDirection);
             if (diff < minDiff) {
                 minDiff = diff;

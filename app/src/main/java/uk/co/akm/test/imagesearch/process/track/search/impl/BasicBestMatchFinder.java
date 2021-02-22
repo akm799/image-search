@@ -1,8 +1,6 @@
 package uk.co.akm.test.imagesearch.process.track.search.impl;
 
 
-import android.graphics.Bitmap;
-
 import uk.co.akm.test.imagesearch.process.model.window.Window;
 import uk.co.akm.test.imagesearch.process.track.search.BestMatchFinder;
 import uk.co.akm.test.imagesearch.process.track.search.impl.map.ColourHistogram;
@@ -17,25 +15,27 @@ import uk.co.akm.test.imagesearch.process.track.search.impl.map.PixelMap;
  * Created by Thanos Mavroidis on 18/02/2021.
  */
 public final class BasicBestMatchFinder implements BestMatchFinder {
-    private final int nSideDivs = 51;
-    private final ColourHistogram colourHistogram = new ColourHistogram(nSideDivs);
-    private final ColourHistogram testColourHistogram = new ColourHistogram(nSideDivs);
+    private final ColourHistogram colourHistogram;
+    private final ColourHistogram testColourHistogram;
 
-    @Override
-    public Window findBestMatch(Bitmap targetImage, Window targetWindow, Bitmap image) {
-        final PixelMap targetImageMap = colourHistogram.toPixelMap(targetImage);
-        colourHistogram.fillColourHistogramForWindow(targetImageMap, targetWindow);
+    private final int windowWidth;
+    private final int windowHeight;
 
-        return findBestMatchWindow(targetImageMap, targetWindow);
+    public BasicBestMatchFinder(ColourHistogram colourHistogram, int windowWidth, int windowHeight) {
+        this.colourHistogram = colourHistogram;
+        this.testColourHistogram = new ColourHistogram(colourHistogram.getNSideDivs());
+        this.windowWidth = windowWidth;
+        this.windowHeight = windowHeight;
     }
 
-    private Window findBestMatchWindow(PixelMap image, Window targetWindow) {
+    @Override
+    public Window findBestMatch(PixelMap image) {
         int xMin = 0;
         int yMin = 0;
         int minDiff = Integer.MAX_VALUE;
-        for (int j=0 ; j<image.getHeight() - targetWindow.height ; j += targetWindow.height) {
-            for (int i=0 ; i<image.getWidth() - targetWindow.width ; i += targetWindow.width) {
-                final Window testWindow = new Window(i, j, targetWindow.width, targetWindow.height);
+        for (int j=0 ; j<image.getHeight() - windowHeight ; j += windowHeight) {
+            for (int i=0 ; i<image.getWidth() - windowWidth ; i += windowWidth) {
+                final Window testWindow = new Window(i, j, windowWidth, windowHeight);
                 final int diff = diffColourHistogramForWindow(image, testWindow);
                 if (diff < minDiff) {
                     minDiff = diff;
@@ -45,7 +45,7 @@ public final class BasicBestMatchFinder implements BestMatchFinder {
             }
         }
 
-        return new Window(xMin, yMin, targetWindow.width, targetWindow.height);
+        return new Window(xMin, yMin, windowWidth, windowHeight);
     }
 
     private int diffColourHistogramForWindow(PixelMap image, Window window) {
