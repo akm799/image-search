@@ -59,32 +59,36 @@ public final class SearchImageProcessor implements ImageProcessor {
         final long t0 = System.currentTimeMillis();
         final ColourHistogram colourHistogram = new ColourHistogram(nSideDivs);
         final PixelMap pixelMap = colourHistogram.toPixelMap(image);
-        colourHistogram.fillColourHistogramForWindow(pixelMap, targetWindow);
         final long dt1 = System.currentTimeMillis() - t0;
-        Log.d(tag, "Target colour histogram initialisation " + dt1 + " ms");
+        Log.d(tag, "Pixel map generation: " + dt1 + " ms");
 
         final long t1 = System.currentTimeMillis();
-        final BestMatchFinder basicBestMatchFinder = new BasicBestMatchFinder(colourHistogram, targetWindow.width, targetWindow.height);
-        final Window initialMatchWindow = basicBestMatchFinder.findBestMatch(pixelMap);
+        colourHistogram.fillColourHistogramForWindow(pixelMap, targetWindow);
         final long dt2 = System.currentTimeMillis() - t1;
-        Log.d(tag, "Brute force search " + dt2 + " ms");
-        logWindowShift(tag, targetWindow, initialMatchWindow);
+        Log.d(tag, "Target colour histogram initialisation: " + dt2 + " ms");
 
         final long t2 = System.currentTimeMillis();
-        final BestMatchFinder meanShiftBestMatch = new MeanShiftBestMatchFinder(colourHistogram, initialMatchWindow);
-        final Window meanShiftBestMatchWindow = meanShiftBestMatch.findBestMatch(pixelMap);
+        final BestMatchFinder basicBestMatchFinder = new BasicBestMatchFinder(colourHistogram, targetWindow.width, targetWindow.height);
+        final Window initialMatchWindow = basicBestMatchFinder.findBestMatch(pixelMap);
         final long dt3 = System.currentTimeMillis() - t2;
-        Log.d(tag, "Mean shift search " + dt3 + " ms");
-        logWindowShift(tag, initialMatchWindow, meanShiftBestMatchWindow);
+        Log.d(tag, "Brute force approximate search: " + dt3 + " ms");
+        logWindowShift(tag, targetWindow, initialMatchWindow);
 
         final long t3 = System.currentTimeMillis();
+        final BestMatchFinder meanShiftBestMatch = new MeanShiftBestMatchFinder(colourHistogram, initialMatchWindow);
+        final Window meanShiftBestMatchWindow = meanShiftBestMatch.findBestMatch(pixelMap);
+        final long dt4 = System.currentTimeMillis() - t3;
+        Log.d(tag, "Mean shift search: " + dt4 + " ms");
+        logWindowShift(tag, initialMatchWindow, meanShiftBestMatchWindow);
+
+        final long t4 = System.currentTimeMillis();
         final BestMatchFinder smallShiftBestMatchFinder = new SmallShiftBestMatchFinder(colourHistogram, meanShiftBestMatchWindow);
         final Window bestMatchWindow = smallShiftBestMatchFinder.findBestMatch(pixelMap);
-        final long dt4 = System.currentTimeMillis() - t3;
-        Log.d(tag, "Small shift search " + dt4 + " ms");
+        final long dt5 = System.currentTimeMillis() - t4;
+        Log.d(tag, "Small shift search: " + dt5 + " ms");
         logWindowShift(tag, meanShiftBestMatchWindow, bestMatchWindow);
 
-        Log.d(tag, "Total search " + (dt1 + dt2 + dt3 + dt4) + " ms");
+        Log.d(tag, "Total search: " + (dt1 + dt2 + dt3 + dt4 + dt5) + " ms");
         logWindowShift(tag, targetWindow, bestMatchWindow);
 
         final ImageProcessor windowImageProcessor = new WindowImageProcessor(new ColouredWindow(bestMatchWindow, bestMatchColour));

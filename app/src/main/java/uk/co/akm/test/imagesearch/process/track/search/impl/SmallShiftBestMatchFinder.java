@@ -7,6 +7,11 @@ import uk.co.akm.test.imagesearch.process.track.search.impl.map.ColourHistogram;
 import uk.co.akm.test.imagesearch.process.track.search.impl.map.PixelMap;
 
 /**
+ * Best match finder that moves an initial window by one pixel in all directions and selects on the
+ * direction that gives the minimum difference with the reference/target colour histogram. This process
+ * is repeated until no improvement in this difference can be obtained. This is finder is supposed to
+ * fine tune a previous search.
+ *
  * Created by Thanos Mavroidis on 04/01/2021.
  */
 public final class SmallShiftBestMatchFinder implements BestMatchFinder {
