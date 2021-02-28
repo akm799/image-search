@@ -8,20 +8,19 @@ import uk.co.akm.test.imagesearch.photo.BitmapFunctions;
 import uk.co.akm.test.imagesearch.photo.PhotoIO;
 import uk.co.akm.test.imagesearch.photo.impl.PhotoIOImpl;
 import uk.co.akm.test.imagesearch.process.ImageProcessor;
-import uk.co.akm.test.imagesearch.process.impl.SearchImageProcessor;
+import uk.co.akm.test.imagesearch.process.impl.SearchImageProcessorSelfTest;
 import uk.co.akm.test.imagesearch.process.model.window.Window;
-import uk.co.akm.test.imagesearch.process.track.search.impl.map.ColourHistogram;
 import uk.co.akm.test.imagesearch.process.util.ColourHelper;
 import uk.co.akm.test.imagesearch.store.Store;
 
-public final class BitmapReadProcessAndDisplayTask extends AsyncTask<String, Void, Bitmap> {
-    private static final String TAG = BitmapReadProcessAndDisplayTask.class.getName();
+public final class BitmapReadProcessDebugAndDisplayTask extends AsyncTask<String, Void, Bitmap> {
+    private static final String TAG = BitmapReadProcessDebugAndDisplayTask.class.getName();
 
     private final PhotoIO photoIO = new PhotoIOImpl();
 
     private final ImageDisplay<Bitmap> parent;
 
-    public BitmapReadProcessAndDisplayTask(ImageDisplay<Bitmap> parent) {
+    public BitmapReadProcessDebugAndDisplayTask(ImageDisplay<Bitmap> parent) {
         this.parent = parent;
     }
 
@@ -38,26 +37,11 @@ public final class BitmapReadProcessAndDisplayTask extends AsyncTask<String, Voi
             return null;
         }
 
-        final ColourHistogram colourHistogram = readStoredColourHistogram();
-        if (colourHistogram == null) {
-            Log.e(TAG, "Error: no stored coloured histogram found.");
-            return null;
-        }
-
         final Bitmap input = readBitmap(params[0]);
-        final Bitmap output = processBitmap(input, selection, colourHistogram);
+        final Bitmap output = processBitmap(input, selection);
         Store.removeWindow(parent.getContext());
-        deleteStoredColourHistogram();
 
         return output;
-    }
-
-    private ColourHistogram readStoredColourHistogram() {
-        throw new UnsupportedOperationException("TODO"); //TODO
-    }
-
-    private void deleteStoredColourHistogram() {
-        throw new UnsupportedOperationException("TODO"); //TODO
     }
 
     private Bitmap readBitmap(String photoName) {
@@ -69,11 +53,11 @@ public final class BitmapReadProcessAndDisplayTask extends AsyncTask<String, Voi
         }
     }
 
-    private Bitmap processBitmap(Bitmap input, Window selection, ColourHistogram colourHistogram) {
+    private Bitmap processBitmap(Bitmap input, Window selection) {
         final Bitmap rotated = BitmapFunctions.quarterRotateClockwise(input, true);
 
         final int rgb = ColourHelper.getRgb(0, 255, 0);
-        final ImageProcessor windowImageProcessor = new SearchImageProcessor(selection, colourHistogram, rgb);
+        final ImageProcessor windowImageProcessor = new SearchImageProcessorSelfTest(selection, rgb);
         final Bitmap processed = windowImageProcessor.processImage(rotated);
         rotated.recycle();
 

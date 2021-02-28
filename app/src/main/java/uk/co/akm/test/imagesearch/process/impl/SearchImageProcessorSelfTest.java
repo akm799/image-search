@@ -13,17 +13,22 @@ import uk.co.akm.test.imagesearch.process.track.search.impl.SmallShiftBestMatchF
 import uk.co.akm.test.imagesearch.process.track.search.impl.map.ColourHistogram;
 import uk.co.akm.test.imagesearch.process.track.search.impl.map.PixelMap;
 
-public final class SearchImageProcessor implements ImageProcessor {
+/**
+ * Search image processor that finds the selected window in an input bitmap by searching the same
+ * input bitmap. This serves as a test of the window searching functionality. Since the correct
+ * window is known a priory (i.e. the originally selected window) the accuracy of the window search
+ * result can be confidently ascertained.
+ */
+public final class SearchImageProcessorSelfTest implements ImageProcessor {
+    private final int nSideDivs = 51;
     private final int scaleFactor = 4;
 
-    private final Window window;
     private final int bestMatchColour;
-    private final ColourHistogram colourHistogram;
+    private final Window targetWindow;
 
-    public SearchImageProcessor(Window window, ColourHistogram colourHistogram, int bestMatchColour) {
-        this.window = window;
+    public SearchImageProcessorSelfTest(Window targetWindow, int bestMatchColour) {
+        this.targetWindow = targetWindow;
         this.bestMatchColour = bestMatchColour;
-        this.colourHistogram = colourHistogram;
     }
 
     @Override
@@ -37,10 +42,12 @@ public final class SearchImageProcessor implements ImageProcessor {
     }
 
     private Bitmap processImageNoLog(Bitmap image) {
-        final Window scaledDownTargetWindow = scaleDownWindow(window, scaleFactor);
+        final Window scaledDownTargetWindow = scaleDownWindow(targetWindow, scaleFactor);
         final Bitmap scaledDownImage = scaleDownImage(image, scaleFactor);
 
+        final ColourHistogram colourHistogram = new ColourHistogram(nSideDivs);
         final PixelMap pixelMap = colourHistogram.toPixelMap(scaledDownImage);
+        colourHistogram.fillColourHistogramForWindow(pixelMap, scaledDownTargetWindow);
 
         final BestMatchFinder basicBestMatchFinder = new BasicBestMatchFinder(colourHistogram, scaledDownTargetWindow.width, scaledDownTargetWindow.height);
         final Window initialMatchWindow = basicBestMatchFinder.findBestMatch(pixelMap);
@@ -60,7 +67,7 @@ public final class SearchImageProcessor implements ImageProcessor {
         final String tag = "shift";
         Log.d(tag, "Starting search ...");
 
-        final Window scaledDownTargetWindow = scaleDownWindow(window, scaleFactor);
+        final Window scaledDownTargetWindow = scaleDownWindow(targetWindow, scaleFactor);
 
         final long t0 = System.currentTimeMillis();
         final Bitmap scaledDownImage = scaleDownImage(image, scaleFactor);
@@ -70,32 +77,38 @@ public final class SearchImageProcessor implements ImageProcessor {
         Log.d(tag, "Down-sized Image size: " + scaledDownImage.getWidth() + " x " + scaledDownImage.getHeight());
 
         final long t1 = System.currentTimeMillis();
+        final ColourHistogram colourHistogram = new ColourHistogram(nSideDivs);
         final PixelMap pixelMap = colourHistogram.toPixelMap(scaledDownImage);
         final long dt2 = System.currentTimeMillis() - t1;
         Log.d(tag, "Pixel map generation: " + dt2 + " ms");
 
         final long t2 = System.currentTimeMillis();
-        final BestMatchFinder basicBestMatchFinder = new BasicBestMatchFinder(colourHistogram, scaledDownTargetWindow.width, scaledDownTargetWindow.height);
-        final Window initialMatchWindow = basicBestMatchFinder.findBestMatch(pixelMap);
+        colourHistogram.fillColourHistogramForWindow(pixelMap, scaledDownTargetWindow);
         final long dt3 = System.currentTimeMillis() - t2;
-        Log.d(tag, "Brute force approximate search: " + dt3 + " ms");
-        logWindowShift(tag, scaledDownTargetWindow, initialMatchWindow);
+        Log.d(tag, "Target colour histogram initialisation: " + dt3 + " ms");
 
         final long t3 = System.currentTimeMillis();
-        final BestMatchFinder meanShiftBestMatch = new MeanShiftBestMatchFinder(colourHistogram, initialMatchWindow);
-        final Window meanShiftBestMatchWindow = meanShiftBestMatch.findBestMatch(pixelMap);
+        final BestMatchFinder basicBestMatchFinder = new BasicBestMatchFinder(colourHistogram, scaledDownTargetWindow.width, scaledDownTargetWindow.height);
+        final Window initialMatchWindow = basicBestMatchFinder.findBestMatch(pixelMap);
         final long dt4 = System.currentTimeMillis() - t3;
-        Log.d(tag, "Mean shift search: " + dt4 + " ms");
-        logWindowShift(tag, initialMatchWindow, meanShiftBestMatchWindow);
+        Log.d(tag, "Brute force approximate search: " + dt4 + " ms");
+        logWindowShift(tag, scaledDownTargetWindow, initialMatchWindow);
 
         final long t4 = System.currentTimeMillis();
+        final BestMatchFinder meanShiftBestMatch = new MeanShiftBestMatchFinder(colourHistogram, initialMatchWindow);
+        final Window meanShiftBestMatchWindow = meanShiftBestMatch.findBestMatch(pixelMap);
+        final long dt5 = System.currentTimeMillis() - t4;
+        Log.d(tag, "Mean shift search: " + dt5 + " ms");
+        logWindowShift(tag, initialMatchWindow, meanShiftBestMatchWindow);
+
+        final long t5 = System.currentTimeMillis();
         final BestMatchFinder smallShiftBestMatchFinder = new SmallShiftBestMatchFinder(colourHistogram, meanShiftBestMatchWindow);
         final Window bestMatchWindow = smallShiftBestMatchFinder.findBestMatch(pixelMap);
-        final long dt5 = System.currentTimeMillis() - t4;
-        Log.d(tag, "Small shift search: " + dt5 + " ms");
+        final long dt6 = System.currentTimeMillis() - t5;
+        Log.d(tag, "Small shift search: " + dt6 + " ms");
         logWindowShift(tag, meanShiftBestMatchWindow, bestMatchWindow);
 
-        Log.d(tag, "Total search: " + (dt1 + dt2 + dt3 + dt4 + dt5) + " ms");
+        Log.d(tag, "Total search: " + (dt1 + dt2 + dt3 + dt4 + dt5 + dt6) + " ms");
         logWindowShift(tag, scaledDownTargetWindow, bestMatchWindow);
 
         final Window scaledUpBestMatchWindow = scaleUpWindow(bestMatchWindow, scaleFactor);
