@@ -2,6 +2,8 @@ package uk.co.akm.test.imagesearch.process.track.search.impl.map;
 
 import android.graphics.Bitmap;
 
+import java.nio.ByteBuffer;
+import java.nio.IntBuffer;
 import java.util.Arrays;
 
 import uk.co.akm.test.imagesearch.process.model.window.Window;
@@ -10,6 +12,7 @@ import uk.co.akm.test.imagesearch.process.util.ColourHelper;
 public final class ColourHistogram {
     private static final int MAX_COLOUR_VALUE_INT = 255;
     private static final float MAX_COLOUR_VALUE = (float)MAX_COLOUR_VALUE_INT;
+    private static final int N_BYTES_INT = 4;
 
     public static final int SHIFT_LEFT = 1;
     public static final int SHIFT_RIGHT = 2;
@@ -39,6 +42,16 @@ public final class ColourHistogram {
         System.arraycopy(data.bins, 0, bins, 0, bins.length);
     }
 
+    public ColourHistogram(byte[] data) {
+        final ByteBuffer byteBuffer = ByteBuffer.allocate(data.length);
+        byteBuffer.put(data);
+
+        this.bins = byteBuffer.asIntBuffer().array();
+        this.nSideDivs = (int)Math.round(Math.pow(bins.length, 1/3.0));
+        this.nSideDivsSq = nSideDivs * nSideDivs;
+        this.binWidth = MAX_COLOUR_VALUE / nSideDivs;
+    }
+
     public PixelMap toPixelMap(Bitmap image) {
         final int[] values = new int[image.getWidth() * image.getHeight()];
 
@@ -58,6 +71,14 @@ public final class ColourHistogram {
 
     public int getValueForBin(int binIndex) {
         return bins[binIndex];
+    }
+
+    public byte[] serialize() {
+        final ByteBuffer byteBuffer = ByteBuffer.allocate(bins.length * N_BYTES_INT);
+        final IntBuffer intBuffer = byteBuffer.asIntBuffer();
+        intBuffer.put(bins);
+
+        return byteBuffer.array();
     }
 
     public int diff(ColourHistogram other) {

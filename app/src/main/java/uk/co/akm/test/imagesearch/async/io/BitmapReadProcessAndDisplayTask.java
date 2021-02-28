@@ -38,7 +38,7 @@ public final class BitmapReadProcessAndDisplayTask extends AsyncTask<String, Voi
             return null;
         }
 
-        final ColourHistogram colourHistogram = readStoredColourHistogram();
+        final ColourHistogram colourHistogram = Store.readColourHistogram(parent.getContext());
         if (colourHistogram == null) {
             Log.e(TAG, "Error: no stored coloured histogram found.");
             return null;
@@ -47,17 +47,9 @@ public final class BitmapReadProcessAndDisplayTask extends AsyncTask<String, Voi
         final Bitmap input = readBitmap(params[0]);
         final Bitmap output = processBitmap(input, selection, colourHistogram);
         Store.removeWindow(parent.getContext());
-        deleteStoredColourHistogram();
+        Store.deleteColourHistogram(parent.getContext());
 
         return output;
-    }
-
-    private ColourHistogram readStoredColourHistogram() {
-        throw new UnsupportedOperationException("TODO"); //TODO
-    }
-
-    private void deleteStoredColourHistogram() {
-        throw new UnsupportedOperationException("TODO"); //TODO
     }
 
     private Bitmap readBitmap(String photoName) {

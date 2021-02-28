@@ -4,7 +4,10 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.support.constraint.solver.widgets.Rectangle;
 
+import java.io.File;
+
 import uk.co.akm.test.imagesearch.process.model.window.Window;
+import uk.co.akm.test.imagesearch.process.track.search.impl.map.ColourHistogram;
 
 public class Store {
     private static final String SHARED_PREFERENCES_FILE_KEY = "uk.co.akm.test.imagesearch.shared_preferences_storage_file";
@@ -18,6 +21,8 @@ public class Store {
     private static final int WINDOW_HEIGHT_INDEX = 3;
     private static final int WINDOW_DATA_COMPONENTS_NUMBER = 4;
     private static final String IMAGE_SELECTION_WINDOW_KEY = "image.selection.window_key";
+
+    private static final String COLOUR_HISTOGRAM_FILE_NAME = "colour-histogram.dat";
 
     public static String get(Context context, String key) {
         return sharedPreferences(context).getString(key, null);
@@ -94,6 +99,27 @@ public class Store {
 
     private static SharedPreferences sharedPreferences(Context context) {
         return context.getSharedPreferences(SHARED_PREFERENCES_FILE_KEY, Context.MODE_PRIVATE);
+    }
+
+    public static boolean saveColourHistogram(Context context, ColourHistogram colourHistogram) {
+        final File file = getColourHistogramFile(context);
+
+        return FileHelper.writeBytes(colourHistogram.serialize(), file);
+    }
+
+    public static ColourHistogram readColourHistogram(Context context) {
+        final File file = getColourHistogramFile(context);
+        final byte[] data = FileHelper.readBytes(file);
+
+        return new ColourHistogram(data);
+    }
+
+    public static boolean deleteColourHistogram(Context context) {
+        return getColourHistogramFile(context).delete();
+    }
+
+    public static File getColourHistogramFile(Context context) {
+        return new File(context.getFilesDir(), COLOUR_HISTOGRAM_FILE_NAME);
     }
 
     private Store() {}
