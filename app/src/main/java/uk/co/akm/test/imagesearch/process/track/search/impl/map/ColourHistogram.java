@@ -3,6 +3,7 @@ package uk.co.akm.test.imagesearch.process.track.search.impl.map;
 import android.graphics.Bitmap;
 
 import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 import java.nio.IntBuffer;
 import java.util.Arrays;
 
@@ -43,13 +44,19 @@ public final class ColourHistogram {
     }
 
     public ColourHistogram(byte[] data) {
-        final ByteBuffer byteBuffer = ByteBuffer.allocate(data.length);
-        byteBuffer.put(data);
-
-        this.bins = byteBuffer.asIntBuffer().array();
+        this.bins = deserialiseBins(data);
         this.nSideDivs = (int)Math.round(Math.pow(bins.length, 1/3.0));
         this.nSideDivsSq = nSideDivs * nSideDivs;
         this.binWidth = MAX_COLOUR_VALUE / nSideDivs;
+    }
+
+    // https://stackoverflow.com/questions/11437203/how-to-convert-a-byte-array-to-an-int-array
+    private int[] deserialiseBins(byte[] data) {
+        final IntBuffer intBuffer = ByteBuffer.wrap(data).order(ByteOrder.BIG_ENDIAN).asIntBuffer();
+        final int[] bins = new int[intBuffer.remaining()];
+        intBuffer.get(bins);
+
+        return bins;
     }
 
     public PixelMap toPixelMap(Bitmap image) {
@@ -73,6 +80,7 @@ public final class ColourHistogram {
         return bins[binIndex];
     }
 
+    // https://stackoverflow.com/questions/1086054/how-to-convert-int-to-byte
     public byte[] serialize() {
         final ByteBuffer byteBuffer = ByteBuffer.allocate(bins.length * N_BYTES_INT);
         final IntBuffer intBuffer = byteBuffer.asIntBuffer();

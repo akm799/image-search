@@ -1,13 +1,19 @@
 package uk.co.akm.test.imagesearch.process.track.search.impl;
 
+
 import org.junit.Assert;
 import org.junit.Test;
 
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
+import java.nio.IntBuffer;
 import java.util.Arrays;
 
 import uk.co.akm.test.imagesearch.helper.MockBitmap;
 import uk.co.akm.test.imagesearch.helper.MockBitmapFactory;
 import uk.co.akm.test.imagesearch.process.model.window.Window;
+import uk.co.akm.test.imagesearch.process.track.search.impl.map.ColourHistogram;
+import uk.co.akm.test.imagesearch.process.track.search.impl.map.PixelMap;
 import uk.co.akm.test.imagesearch.process.util.ColourHelper;
 
 public class ColourHistogramTest {
@@ -68,6 +74,26 @@ public class ColourHistogramTest {
         }
         for (int n : colourHistogram) {
             Assert.assertEquals(0, n);
+        }
+    }
+
+    @Test
+    public void shouldSerialize() {
+        final int width = 10;
+        final int height = 10;
+        final MockBitmap image = MockBitmapFactory.randomMockBitmapInstance(width, height);
+        final Window window = new Window(0, 0, width, height);
+        final PixelMap pixelMap = toPixelMap(image);
+        final int nBins = nSideDivs * nSideDivsSq;
+        final ColourHistogram underTest = new ColourHistogram(nSideDivs);
+        underTest.fillColourHistogramForWindow(pixelMap, window);
+
+        final byte[] data = underTest.serialize();
+        Assert.assertEquals(4 * nBins, data.length);
+        final ColourHistogram deserialized = new ColourHistogram(data);
+        Assert.assertEquals(underTest.getNSideDivs(), deserialized.getNSideDivs());
+        for (int i=0 ; i<nBins ; i++) {
+            Assert.assertEquals(underTest.getValueForBin(i), deserialized.getValueForBin(i));
         }
     }
 
@@ -430,6 +456,19 @@ public class ColourHistogramTest {
         }
 
         return diffHistogram;
+    }
+
+    public PixelMap toPixelMap(MockBitmap image) {
+        final int[] values = new int[image.getWidth() * image.getHeight()];
+
+        int i = 0;
+        for (int y=0 ; y<image.getHeight() ; y++) {
+            for (int x=0 ; x<image.getWidth() ; x++) {
+                values[i++] = getColourHistogramIndexForPixel(image, x, y);
+            }
+        }
+
+        return new PixelMap(image.getWidth(), values);
     }
 
     private int[] colourHistogramInstance() {
