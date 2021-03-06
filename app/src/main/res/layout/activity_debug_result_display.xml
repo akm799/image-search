@@ -3,12 +3,19 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".PhotoDisplayActivity">
+    tools:context=".debug.DebugResultDisplayActivity">
 
-    <uk.co.akm.test.imagesearch.view.combined.PhotoWindowView
-        android:id="@+id/photoView"
+    <ImageView
+        android:id="@+id/smallPhotoView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_gravity="center"/>
+
+    <ProgressBar
+        android:id="@+id/debugProcessingProgress"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:visibility="gone"/>
 
 </FrameLayout>

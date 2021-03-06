@@ -21,8 +21,8 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".PhotoDisplayActivity" android:theme="@style/Theme.AppCompat.Light.NoActionBar"/>
-        <activity android:name=".DebugPhotoDisplayActivity" android:theme="@style/Theme.AppCompat.Light.NoActionBar" android:screenOrientation="portrait"/>
+        <activity android:name=".debug.DebugWindowSelectionActivity" android:theme="@style/Theme.AppCompat.Light.NoActionBar"/>
+        <activity android:name=".debug.DebugResultDisplayActivity" android:theme="@style/Theme.AppCompat.Light.NoActionBar" android:screenOrientation="portrait"/>
 
         <provider
             android:name="android.support.v4.content.FileProvider"

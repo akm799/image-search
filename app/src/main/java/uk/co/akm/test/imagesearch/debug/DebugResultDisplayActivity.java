@@ -1,4 +1,4 @@
-package uk.co.akm.test.imagesearch;
+package uk.co.akm.test.imagesearch.debug;
 
 import android.app.Activity;
 import android.content.Context;
@@ -9,6 +9,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.ImageView;
 
+import uk.co.akm.test.imagesearch.R;
 import uk.co.akm.test.imagesearch.async.io.BitmapReadProcessDebugAndDisplayTask;
 import uk.co.akm.test.imagesearch.async.io.ImageDisplay;
 import uk.co.akm.test.imagesearch.photo.PhotoIO;
@@ -19,11 +20,11 @@ import uk.co.akm.test.imagesearch.photo.impl.PhotoIOImpl;
  * The only purpose for such a display is for debugging, i.e. making sure that the selected image section
  * was captured correctly.
  */
-public final class DebugPhotoDisplayActivity extends AppCompatActivity implements ImageDisplay<Bitmap> {
+public final class DebugResultDisplayActivity extends AppCompatActivity implements ImageDisplay<Bitmap> {
     private static final String PHOTO_NAME_ARG_KEY = "DebugPhotoDisplayActivity.Small.Photo.Name.Arg_key";
 
     public static void start(Activity parent, String photoName) {
-        final Intent intent = new Intent(parent, DebugPhotoDisplayActivity.class);
+        final Intent intent = new Intent(parent, DebugResultDisplayActivity.class);
         intent.putExtra(PHOTO_NAME_ARG_KEY, photoName);
 
         parent.startActivity(intent);
@@ -36,7 +37,7 @@ public final class DebugPhotoDisplayActivity extends AppCompatActivity implement
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_debug_small_photo_display);
+        setContentView(R.layout.activity_debug_result_display);
 
         imageView = findViewById(R.id.smallPhotoView);
     }

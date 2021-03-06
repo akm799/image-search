@@ -1,4 +1,4 @@
-package uk.co.akm.test.imagesearch;
+package uk.co.akm.test.imagesearch.debug;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -8,19 +8,20 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 
+import uk.co.akm.test.imagesearch.R;
 import uk.co.akm.test.imagesearch.async.io.ImageDisplayWithAfterAction;
 import uk.co.akm.test.imagesearch.store.Store;
 import uk.co.akm.test.imagesearch.view.combined.PhotoWindowView;
 
-public class PhotoDisplayActivity extends AppCompatActivity implements ImageDisplayWithAfterAction<String> {
-    private static final String TAG = PhotoDisplayActivity.class.getName();
+public class DebugWindowSelectionActivity extends AppCompatActivity implements ImageDisplayWithAfterAction<String> {
+    private static final String TAG = DebugWindowSelectionActivity.class.getName();
     private static final String PHOTO_NAME_ARG_KEY = "PhotoDisplayActivity.Photo.Name.Arg_key";
 
     private AlertDialog saveDialog;
     private PhotoWindowView photoView;
 
-    static void start(Activity parent, String photoName) {
-        final Intent intent = new Intent(parent, PhotoDisplayActivity.class);
+    public static void start(Activity parent, String photoName) {
+        final Intent intent = new Intent(parent, DebugWindowSelectionActivity.class);
         intent.putExtra(PHOTO_NAME_ARG_KEY, photoName);
 
         parent.startActivity(intent);
@@ -29,7 +30,7 @@ public class PhotoDisplayActivity extends AppCompatActivity implements ImageDisp
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_photo_display);
+        setContentView(R.layout.activity_debug_window_selection);
 
         photoView = findViewById(R.id.photoView);
 
@@ -54,7 +55,7 @@ public class PhotoDisplayActivity extends AppCompatActivity implements ImageDisp
 
     @Override
     public void display(String photoName) {
-        DebugPhotoDisplayActivity.start(this, photoName);
+        DebugResultDisplayActivity.start(this, photoName);
     }
 
     @Override
@@ -81,7 +82,7 @@ public class PhotoDisplayActivity extends AppCompatActivity implements ImageDisp
                     @Override
                     public void onClick(DialogInterface dialogInterface, int which) {
                         dismissSaveDialog();
-                        PhotoDisplayActivity.super.onBackPressed();
+                        DebugWindowSelectionActivity.super.onBackPressed();
                     }
                 }).show();
     }
@@ -89,7 +90,7 @@ public class PhotoDisplayActivity extends AppCompatActivity implements ImageDisp
     private void onSaveImageSelection() {
         if (saveSelectedImageWindow()) {
             final String photoName = getIntent().getStringExtra(PHOTO_NAME_ARG_KEY);
-            DebugPhotoDisplayActivity.start(this, photoName);
+            DebugResultDisplayActivity.start(this, photoName);
         }
 
         super.onBackPressed();
