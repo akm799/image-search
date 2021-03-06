@@ -1,12 +1,6 @@
 package uk.co.akm.test.imagesearch.async.io;
 
-import android.content.Context;
-
-public interface ImageDisplay<I> {
-
-    Context getContext();
-
-    void onProcessingStarted();
+public interface ImageDisplay<I> extends ImageProcessingParent {
 
     void display(I image);
 }
