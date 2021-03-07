@@ -118,6 +118,12 @@ public class Store {
         return getColourHistogramFile(context).delete();
     }
 
+    public static boolean hasColourHistogramFile(Context context) {
+        final File file = getColourHistogramFile(context);
+
+        return file != null && file.exists() && file.length() > 0;
+    }
+
     public static File getColourHistogramFile(Context context) {
         return new File(context.getFilesDir(), COLOUR_HISTOGRAM_FILE_NAME);
     }
