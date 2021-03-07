@@ -16,12 +16,12 @@ import uk.co.akm.test.imagesearch.photo.PhotoIO;
 import uk.co.akm.test.imagesearch.photo.impl.PhotoIOImpl;
 
 /**
- * This activity is used to display the image section selected and captured in the PhotoDisplayActivity.
+ * This activity is used to display the image section selected and captured in the DebugWindowSelectionActivity.
  * The only purpose for such a display is for debugging, i.e. making sure that the selected image section
  * was captured correctly.
  */
 public final class DebugResultDisplayActivity extends AppCompatActivity implements ImageDisplay<Bitmap> {
-    private static final String PHOTO_NAME_ARG_KEY = "DebugPhotoDisplayActivity.Small.Photo.Name.Arg_key";
+    private static final String PHOTO_NAME_ARG_KEY = "DebugResultDisplayActivity.Small.Photo.Name.Arg_key";
 
     public static void start(Activity parent, String photoName) {
         final Intent intent = new Intent(parent, DebugResultDisplayActivity.class);
