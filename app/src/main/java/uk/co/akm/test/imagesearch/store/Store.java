@@ -12,6 +12,8 @@ import uk.co.akm.test.imagesearch.process.track.search.impl.map.ColourHistogram;
 public class Store {
     private static final String SHARED_PREFERENCES_FILE_KEY = "uk.co.akm.test.imagesearch.shared_preferences_storage_file";
 
+    private static final String TEST_MODE_KEY = "test.mode_key";
+
     private static final char NUMBER_SEPARATOR = '|';
     private static final String NUMBER_SEPARATOR_REGEX = "\\|";
 
@@ -34,6 +36,15 @@ public class Store {
 
     public static void remove(Context context, String key) {
         sharedPreferences(context).edit().remove(key).apply();
+    }
+
+    public static boolean isTestMode(Context context) {
+        return "true".equalsIgnoreCase(get(context, TEST_MODE_KEY));
+    }
+
+    public static void setTestMode(Context context, boolean value) {
+        final String stringValue = "" + value;
+        put(context, TEST_MODE_KEY, stringValue);
     }
 
     public static Window getWindow(Context context) {
