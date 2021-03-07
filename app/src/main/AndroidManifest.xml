@@ -21,6 +21,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name=".WindowSelectionActivity" android:theme="@style/Theme.AppCompat.Light.NoActionBar"/>
         <activity android:name=".debug.DebugWindowSelectionActivity" android:theme="@style/Theme.AppCompat.Light.NoActionBar"/>
         <activity android:name=".debug.DebugResultDisplayActivity" android:theme="@style/Theme.AppCompat.Light.NoActionBar" android:screenOrientation="portrait"/>
 

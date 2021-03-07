@@ -7,13 +7,16 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
+import android.view.View;
+import android.widget.Toast;
 
 import uk.co.akm.test.imagesearch.async.io.ColourHistogramSaveTask;
-import uk.co.akm.test.imagesearch.async.io.ImageDisplayWithAfterAction;
+import uk.co.akm.test.imagesearch.async.io.ImageDisplay;
 import uk.co.akm.test.imagesearch.store.Store;
 import uk.co.akm.test.imagesearch.view.combined.PhotoWindowView;
 
-public class WindowSelectionActivity extends AppCompatActivity implements ImageDisplayWithAfterAction<Boolean> {
+public class WindowSelectionActivity extends AppCompatActivity implements ImageDisplay<Boolean> {
     private static final String TAG = WindowSelectionActivity.class.getName();
     private static final String PHOTO_NAME_ARG_KEY = "PhotoDisplayActivity.Photo.Name.Arg_key";
 
@@ -30,7 +33,7 @@ public class WindowSelectionActivity extends AppCompatActivity implements ImageD
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_debug_window_selection);
+        setContentView(R.layout.activity_window_selection);
 
         photoView = findViewById(R.id.photoView);
 
@@ -41,24 +44,24 @@ public class WindowSelectionActivity extends AppCompatActivity implements ImageD
     }
 
     @Override
-    public void afterDisplay() {
-        super.onBackPressed();
-    }
-
-    @Override
     public Context getContext() {
         return getApplicationContext();
     }
 
     @Override
     public void onProcessingStarted() {
-        //TODO Show spinner.
+        findViewById(R.id.windowSelectionProgress).setVisibility(View.VISIBLE);
     }
 
     @Override
     public void display(Boolean success) {
         if (success) {
-            super.onBackPressed(); //TODO Check if this will start the photo-capture activity again.
+            Log.d(TAG, "Saved the colour histogram for the selected image section.");
+            finish();
+        } else {
+            Log.e(TAG, "Could not save the colour histogram for the selected image section.");
+            findViewById(R.id.windowSelectionProgress).setVisibility(View.GONE);
+            Toast.makeText(this, "Could not save the colour histogram for the selected image section.", Toast.LENGTH_SHORT).show();
         }
     }
 
