@@ -8,6 +8,7 @@ import java.nio.IntBuffer;
 import java.util.Arrays;
 
 import uk.co.akm.test.imagesearch.process.model.window.Window;
+import uk.co.akm.test.imagesearch.process.track.search.Constants;
 import uk.co.akm.test.imagesearch.process.util.ColourHelper;
 
 public final class ColourHistogram {
@@ -60,12 +61,16 @@ public final class ColourHistogram {
     }
 
     public PixelMap toPixelMap(Bitmap image) {
+        return toPixelMap(image, Constants.NORMALISE_COLOURS);
+    }
+
+    private PixelMap toPixelMap(Bitmap image, boolean normalised) {
         final int[] values = new int[image.getWidth() * image.getHeight()];
 
         int i = 0;
         for (int y=0 ; y<image.getHeight() ; y++) {
             for (int x=0 ; x<image.getWidth() ; x++) {
-                values[i++] = getColourHistogramIndexForPixel(image, x, y);
+                values[i++] = getColourHistogramIndexForPixel(image, x, y, normalised);
             }
         }
 
@@ -281,16 +286,40 @@ public final class ColourHistogram {
         bins[binIndex]--;
     }
 
-    private int getColourHistogramIndexForPixel(Bitmap image, int x, int y) {
+    private int getColourHistogramIndexForPixel(Bitmap image, int x, int y, boolean normalised) {
         final int rgb = image.getPixel(x, y);
 
-        return findBinIndexForColour(rgb);
+        if (normalised) {
+            return findBinIndexForNormalisedColour(rgb);
+        } else {
+            return findBinIndexForColour(rgb);
+        }
     }
 
     private int findBinIndexForColour(int rgb) {
         final int rIndex = findSideBinIndex(ColourHelper.getRed(rgb));
         final int gIndex = findSideBinIndex(ColourHelper.getGreen(rgb));
         final int bIndex = findSideBinIndex(ColourHelper.getBlue(rgb));
+
+        return bIndex*nSideDivsSq + gIndex*nSideDivs + rIndex;
+    }
+
+    private int findBinIndexForNormalisedColour(int rgb) {
+        final int r = ColourHelper.getRed(rgb);
+        final int g = ColourHelper.getGreen(rgb);
+        final int b = ColourHelper.getBlue(rgb);
+        final float sum = (float)(r + g + b);
+        if (sum == 0.0) {
+            return 0;
+        }
+
+        final int rn = Math.round(MAX_COLOUR_VALUE_INT*r/sum);
+        final int gn = Math.round(MAX_COLOUR_VALUE_INT*g/sum);
+        final int bn = Math.round(MAX_COLOUR_VALUE_INT*b/sum);
+
+        final int rIndex = findSideBinIndex(rn);
+        final int gIndex = findSideBinIndex(gn);
+        final int bIndex = findSideBinIndex(bn);
 
         return bIndex*nSideDivsSq + gIndex*nSideDivs + rIndex;
     }
