@@ -26,4 +26,13 @@ public class MainActivity extends AppCompatActivity {
         Store.setTestMode(this, testMode);
         PhotoCaptureActivity.start(this);
     }
+
+    @Override
+    public void onBackPressed() {
+        try {
+            Store.deleteColourHistogram(this);
+        } finally {
+            super.onBackPressed();
+        }
+    }
 }
