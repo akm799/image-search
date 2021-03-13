@@ -7,6 +7,7 @@ import uk.co.akm.test.imagesearch.process.ImageProcessor;
 import uk.co.akm.test.imagesearch.process.model.window.ColouredWindow;
 import uk.co.akm.test.imagesearch.process.model.window.Window;
 import uk.co.akm.test.imagesearch.process.track.search.BestMatchFinder;
+import uk.co.akm.test.imagesearch.process.track.search.Constants;
 import uk.co.akm.test.imagesearch.process.track.search.impl.BasicBestMatchFinder;
 import uk.co.akm.test.imagesearch.process.track.search.impl.MeanShiftBestMatchFinder;
 import uk.co.akm.test.imagesearch.process.track.search.impl.SmallShiftBestMatchFinder;
@@ -14,7 +15,7 @@ import uk.co.akm.test.imagesearch.process.track.search.impl.map.ColourHistogram;
 import uk.co.akm.test.imagesearch.process.track.search.impl.map.PixelMap;
 
 public final class SearchImageProcessor implements ImageProcessor {
-    private final int scaleFactor = 4;
+    private final int scaleFactor = Constants.IMAGE_SCALE_FACTOR;
 
     private final Window window;
     private final int bestMatchColour;

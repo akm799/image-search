@@ -7,6 +7,7 @@ import uk.co.akm.test.imagesearch.process.ImageProcessor;
 import uk.co.akm.test.imagesearch.process.model.window.ColouredWindow;
 import uk.co.akm.test.imagesearch.process.model.window.Window;
 import uk.co.akm.test.imagesearch.process.track.search.BestMatchFinder;
+import uk.co.akm.test.imagesearch.process.track.search.Constants;
 import uk.co.akm.test.imagesearch.process.track.search.impl.BasicBestMatchFinder;
 import uk.co.akm.test.imagesearch.process.track.search.impl.MeanShiftBestMatchFinder;
 import uk.co.akm.test.imagesearch.process.track.search.impl.SmallShiftBestMatchFinder;
@@ -20,8 +21,8 @@ import uk.co.akm.test.imagesearch.process.track.search.impl.map.PixelMap;
  * result can be confidently ascertained.
  */
 public final class SearchImageProcessorSelfTest implements ImageProcessor {
-    private final int nSideDivs = 51;
-    private final int scaleFactor = 4;
+    private final int nSideDivs = Constants.COLOUR_HISTOGRAM_SIDE_LENGTH;
+    private final int scaleFactor = Constants.IMAGE_SCALE_FACTOR;
 
     private final int bestMatchColour;
     private final Window targetWindow;

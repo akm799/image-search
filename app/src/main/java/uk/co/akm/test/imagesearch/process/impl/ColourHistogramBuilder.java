@@ -5,14 +5,15 @@ import android.util.Log;
 
 import uk.co.akm.test.imagesearch.process.ImageOperator;
 import uk.co.akm.test.imagesearch.process.model.window.Window;
+import uk.co.akm.test.imagesearch.process.track.search.Constants;
 import uk.co.akm.test.imagesearch.process.track.search.impl.map.ColourHistogram;
 import uk.co.akm.test.imagesearch.process.track.search.impl.map.PixelMap;
 
 /**
  */
 public final class ColourHistogramBuilder implements ImageOperator<ColourHistogram> {
-    private final int nSideDivs = 51;  //TODO Move in common parameters.
-    private final int scaleFactor = 4; //TODO Move in common parameters.
+    private final int nSideDivs = Constants.COLOUR_HISTOGRAM_SIDE_LENGTH;
+    private final int scaleFactor = Constants.IMAGE_SCALE_FACTOR;
 
     private final Window window;
 
