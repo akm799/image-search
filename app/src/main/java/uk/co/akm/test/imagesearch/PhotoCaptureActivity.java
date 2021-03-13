@@ -26,7 +26,30 @@ public class PhotoCaptureActivity extends AppCompatActivity {
         setContentView(R.layout.activity_photo_capture);
     }
 
-    public void onPhoto(View view) {
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        setPhotoForSearchButtonVisibility();
+    }
+
+    private void setPhotoForSearchButtonVisibility() {
+        final View button = findViewById(R.id.photoCaptureSearch);
+        if (button != null) {
+            if (!Store.isTestMode(this) && Store.hasColourHistogramFile(this)) {
+                button.setVisibility(View.VISIBLE);
+            } else {
+                button.setVisibility(View.INVISIBLE);
+            }
+        }
+    }
+
+    public void onPhotoMark(View view) {
+        Store.deleteColourHistogram(this);
+        photoHandler.initiateImageCapture(this, PHOTO_NAME);
+    }
+
+    public void onPhotoSearch(View view) {
         photoHandler.initiateImageCapture(this, PHOTO_NAME);
     }
 

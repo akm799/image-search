@@ -71,7 +71,6 @@ public final class BitmapReadProcessAndDisplayTask extends AsyncTask<String, Voi
         final Bitmap input = readBitmap(photoName);
         final Bitmap output = processBitmap(input, selection, colourHistogram);
         Store.removeWindow(context);
-        Store.deleteColourHistogram(context);
 
         return output;
     }

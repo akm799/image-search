@@ -16,14 +16,14 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
             android:layout_marginBottom="16dp"
-            android:text="TEST MODE"
+            android:text="@string/main_test_mode"
             android:onClick="onTestMode"/>
 
         <Button
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
-            android:text="SEARCH MODE"
+            android:text="@string/main_search_mode"
             android:onClick="onSearchMode"/>
     </LinearLayout>
 

@@ -5,10 +5,24 @@
     android:layout_height="match_parent"
     tools:context=".PhotoCaptureActivity">
 
-    <Button
+    <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal|bottom"
-        android:text="PHOTO"
-        android:onClick="onPhoto"/>
+        android:layout_gravity="center"
+        android:orientation="vertical">
+
+        <Button
+            android:id="@+id/photoCaptureMark"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/photo_capture_mark"
+            android:onClick="onPhotoMark"/>
+
+        <Button
+            android:id="@+id/photoCaptureSearch"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/photo_capture_search"
+            android:onClick="onPhotoSearch"/>
+    </LinearLayout>
 </FrameLayout>

@@ -1,3 +1,9 @@
 <resources>
     <string name="app_name">image-search</string>
+
+    <string name="main_test_mode">TEST MODE</string>
+    <string name="main_search_mode">SEARCH MODE</string>
+
+    <string name="photo_capture_mark">PHOTO TO MARK IMAGE</string>
+    <string name="photo_capture_search">PHOTO TO SEARCH FOR MARKED IMAGE</string>
 </resources>
